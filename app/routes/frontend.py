@@ -69,10 +69,8 @@ def manage_rooms():
     return render_template('manage_rooms.html')
 
 @frontend_bp.route('/my-bookings')
-@login_required
 def my_bookings():
-    # Since we removed Customer model, we'll use a session-based approach
-    # For now, show reservations by email if user provides it via query param
+    # Public booking tracker - guests can check their bookings by email
     email = request.args.get('email', '')
     
     if email:

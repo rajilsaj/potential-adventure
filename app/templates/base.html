@@ -71,20 +71,30 @@
                 </div>
                 <div class="flex items-center space-x-4">
                     {% if current_user is defined and current_user.is_authenticated %}
-                    {% if current_user.role == 'ADMIN' %}
+                    <!-- Admin/Staff Users -->
+                    {% if current_user.role in ['ADMIN', 'STAFF'] %}
                     <a href="{{ url_for('frontend.dashboard') }}"
-                        class="text-gray-500 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
-                    {% else %}
-                    <a href="{{ url_for('frontend.my_bookings') }}"
-                        class="text-gray-500 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">My
-                        Bookings</a>
+                        class="text-gray-500 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">
+                        Dashboard
+                    </a>
+                    <span class="text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full">{{ current_user.role
+                        }}</span>
                     {% endif %}
+
                     <a href="#" onclick="logout()"
-                        class="text-gray-500 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Logout</a>
+                        class="text-gray-500 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">
+                        Logout ({{ current_user.username }})
+                    </a>
                     {% else %}
+                    <!-- Guest Users -->
+                    <a href="{{ url_for('frontend.my_bookings') }}"
+                        class="text-gray-500 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">
+                        Track Booking
+                    </a>
                     <a href="{{ url_for('frontend.admin_login') }}"
-                        class="text-gray-500 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Admin
-                        Login</a>
+                        class="text-gray-500 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">
+                        Staff Login
+                    </a>
                     <a href="{{ url_for('frontend.rooms') }}"
                         class="bg-primary text-white hover:bg-indigo-700 px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out">
                         Book Now

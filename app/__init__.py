@@ -1,11 +1,10 @@
 # app/__init__.py
 
-from flask import Flask, render_template, g
+from flask import Flask
 from .extensions import db, login_manager, bcrypt
 from .config import Config
 from dotenv import load_dotenv
 from flask_login import current_user
-from sqlalchemy import text
 import os
 
 def create_app():
@@ -30,25 +29,14 @@ def create_app():
     # Register blueprints
     from .routes.auth_api import auth_bp
     from .routes.rooms_api import rooms_bp
-    from .routes.customers_api import customers_bp
     from .routes.reservations_api import reservations_bp
     from .routes.dashboard_api import dashboard_bp
     from .routes.frontend import frontend_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(rooms_bp)
-    app.register_blueprint(customers_bp)
     app.register_blueprint(reservations_bp)
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(frontend_bp)
 
-    @app.before_request
-    def check_db_connection():
-        try:
-            db.session.execute(text('SELECT 1'))
-            g.db_connected = True
-        except Exception as e:
-            return render_template('db_error.html'), 500
-
     return app
-
