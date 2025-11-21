@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - HRS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/static/js/admin.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .tab-active {
+            border-bottom: 2px solid #2563eb;
+            color: #2563eb;
+        }
+
+        .tab-inactive {
+            border-bottom: 2px solid transparent;
+            color: #6b7280;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800 min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-8">
+                <div class="flex items-center">
+                    <div class="bg-blue-600 text-white p-1.5 rounded mr-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                            </path>
+                        </svg>
+                    </div>
+                    <span class="font-bold text-xl text-gray-800">Hotel Admin</span>
+                </div>
+                <div class="hidden md:flex space-x-4 text-sm font-medium text-gray-600">
+                    <a href="#" class="text-blue-600">Dashboard</a>
+                    <a href="/admin/rooms" class="hover:text-gray-900">Rooms</a>
+                    <a href="/admin/reservations" class="hover:text-gray-900">Reservations</a>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button class="p-1 text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
+                        </path>
+                    </svg>
+                </button>
+                <div class="h-8 w-8 rounded-full bg-gray-300 overflow-hidden">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=374151&color=fff" alt="Admin">
+                </div>
+                <a href="#" id="logout-btn" class="text-sm font-medium text-gray-600 hover:text-red-600">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-8">
+
+        <!-- Metric Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Card 1 -->
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Total Reservations</p>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1" id="summary-total">128</h3>
+                    </div>
+                    <div class="p-2 bg-blue-50 rounded-lg text-blue-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                            </path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center text-sm">
+                    <span class="text-green-500 font-medium flex items-center">
+                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                        </svg>
+                        +12%
+                    </span>
+                    <span class="text-gray-400 ml-2">from last month</span>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Total Customers</p>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1">84</h3>
+                    </div>
+                    <div class="p-2 bg-purple-50 rounded-lg text-purple-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 005.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                            </path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center text-sm">
+                    <span class="text-green-500 font-medium flex items-center">
+                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                        </svg>
+                        +4%
+                    </span>
+                    <span class="text-gray-400 ml-2">new this week</span>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Confirmed</p>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1" id="summary-booked">0</h3>
+                    </div>
+                    <div class="p-2 bg-green-50 rounded-lg text-green-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <a href="#" class="text-sm text-blue-600 font-medium hover:underline">View details &rarr;</a>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Pending</p>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1" id="summary-pending">0</h3>
+                    </div>
+                    <div class="p-2 bg-yellow-50 rounded-lg text-yellow-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <a href="#" class="text-sm text-blue-600 font-medium hover:underline">View details &rarr;</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabbed Interface -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="border-b border-gray-200 px-6">
+                <nav class="-mb-px flex space-x-8">
+                    <button onclick="switchTab('reservations')" id="tab-reservations"
+                        class="tab-active py-4 px-1 text-sm font-medium transition">
+                        Reservations
+                    </button>
+                    <button onclick="switchTab('customers')" id="tab-customers"
+                        class="tab-inactive py-4 px-1 text-sm font-medium transition hover:text-gray-800">
+                        Customers
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Reservations Tab -->
+            <div id="content-reservations" class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold text-gray-800">Recent Reservations</h3>
+                    <button class="text-sm text-blue-600 hover:underline">View All</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider font-semibold">
+                                <th class="px-4 py-3 rounded-l-lg">ID</th>
+                                <th class="px-4 py-3">Guest</th>
+                                <th class="px-4 py-3">Check-in</th>
+                                <th class="px-4 py-3">Status</th>
+                                <th class="px-4 py-3 rounded-r-lg text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-50 text-sm" id="recent-reservations-body">
+                            <!-- Populated by JS -->
+                            <tr>
+                                <td class="px-4 py-3 text-gray-500" colspan="5">Loading...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Customers Tab -->
+            <div id="content-customers" class="p-6 hidden">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold text-gray-800">Customer Database</h3>
+                    <button class="text-sm text-blue-600 hover:underline">View All</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider font-semibold">
+                                <th class="px-4 py-3 rounded-l-lg">Name</th>
+                                <th class="px-4 py-3">Email</th>
+                                <th class="px-4 py-3">Phone</th>
+                                <th class="px-4 py-3 rounded-r-lg">Total Stays</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-50 text-sm">
+                            <!-- Static Data for Demo -->
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 font-medium text-gray-900">John Doe</td>
+                                <td class="px-4 py-3 text-gray-500">john.doe@example.com</td>
+                                <td class="px-4 py-3 text-gray-500">555-0101</td>
+                                <td class="px-4 py-3 text-gray-900">3</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 font-medium text-gray-900">Maria Santos</td>
+                                <td class="px-4 py-3 text-gray-500">m.santos@example.com</td>
+                                <td class="px-4 py-3 text-gray-500">555-0102</td>
+                                <td class="px-4 py-3 text-gray-900">1</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function switchTab(tabName) {
+            // Hide all content
+            document.getElementById('content-reservations').classList.add('hidden');
+            document.getElementById('content-customers').classList.add('hidden');
+
+            // Reset tabs
+            document.getElementById('tab-reservations').className = 'tab-inactive py-4 px-1 text-sm font-medium transition hover:text-gray-800';
+            document.getElementById('tab-customers').className = 'tab-inactive py-4 px-1 text-sm font-medium transition hover:text-gray-800';
+
+            // Show selected
+            document.getElementById('content-' + tabName).classList.remove('hidden');
+            document.getElementById('tab-' + tabName).className = 'tab-active py-4 px-1 text-sm font-medium transition';
+        }
+
+        // Dashboard Summary Logic (Integrated from admin.js concept)
+        $(document).ready(function () {
+            $.get('/api/dashboard/summary', function (data) {
+                $('#summary-pending').text(data.PENDING || 0);
+                $('#summary-booked').text(data.BOOKED || 0);
+
+                let total = 0;
+                for (let key in data) total += data[key];
+                $('#summary-total').text(total);
+            });
+
+            $.get('/api/reservations?status=PENDING', function (data) {
+                const tbody = $('#recent-reservations-body');
+                tbody.empty();
+                if (data.length === 0) {
+                    tbody.append('<tr><td colspan="5" class="px-4 py-3 text-gray-500 text-center">No pending reservations</td></tr>');
+                }
+                data.forEach(res => {
+                    tbody.append(`
+                        <tr class="hover:bg-gray-50 transition">
+                            <td class="px-4 py-3 font-mono text-xs text-gray-500">#${res.id}</td>
+                            <td class="px-4 py-3 font-medium text-gray-900">${res.guest_name}</td>
+                            <td class="px-4 py-3 text-gray-500">${res.check_in_date}</td>
+                            <td class="px-4 py-3">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+                                    ${res.status}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-right">
+                                <a href="/admin/reservations" class="text-blue-600 hover:text-blue-900 font-medium text-xs">Manage</a>
+                            </td>
+                        </tr>
+                    `);
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

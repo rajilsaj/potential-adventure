@@ -1,12 +1,38 @@
-# Python cache
+# Byte-compiled / optimized / DLL files
 __pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.egg-info/
 
-# SSH keys or sensitive files
-envienvi
-envienvi.pub
+# Virtual environments
+venv/
+env/
 
-# Any other private files you don't want on GitHub
-*.key
-*.pem
-*.env
+# Environment files
 
+# IDE files
+.vscode/
+.idea/
+
+# Flask uploads & logs
+instance/
+*.log
+
+# Python installs
+pip-wheel-metadata/
+dist/
+build/
+
+# Cache
+*.sqlite
+*.db
+.cache/
+.pytest_cache/
+
+# macOS files
+.DS_Store
+
+# Node (if used)
+node_modules/

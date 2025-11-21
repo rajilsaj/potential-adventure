@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Reservation System - Booking</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Main Container -->
+    <main class="flex-grow container mx-auto px-4 py-8 max-w-6xl">
+
+        <!-- Step Indicator -->
+        <div class="mb-8">
+            <div class="flex items-center justify-center space-x-4">
+                <div class="flex items-center text-blue-600">
+                    <div
+                        class="flex items-center justify-center w-8 h-8 rounded-full border-2 border-blue-600 font-bold mr-2">
+                        1</div>
+                    <span class="font-semibold">Booking Information</span>
+                </div>
+                <div class="h-0.5 w-16 bg-gray-300"></div>
+                <div class="flex items-center text-gray-400">
+                    <div
+                        class="flex items-center justify-center w-8 h-8 rounded-full border-2 border-gray-300 font-bold mr-2">
+                        2</div>
+                    <span>Payment Information</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2-Column Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-[2fr_1.5fr] gap-8">
+
+            <!-- Left Column: Booking Details -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8">
+                <h2 class="text-2xl font-bold mb-6 text-gray-800">Booking Details</h2>
+
+                <form id="booking-form" class="space-y-6">
+                    <!-- Dates -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Check-in Date</label>
+                            <input type="date" id="check_in_date"
+                                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-gray-50"
+                                required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Check-out Date</label>
+                            <input type="date" id="check_out_date"
+                                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-gray-50"
+                                required>
+                        </div>
+                    </div>
+
+                    <!-- Guests & Room Type -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">No. of Guests</label>
+                            <select
+                                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white">
+                                <option>1 Adult</option>
+                                <option>2 Adults</option>
+                                <option>2 Adults, 1 Child</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Room Type</label>
+                            <select id="room_id"
+                                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white">
+                                <option value="">Select a Room</option>
+                                <!-- Options populated by JS -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-gray-100 pt-6">
+                        <h3 class="text-lg font-semibold mb-4 text-gray-800">Contact Details</h3>
+
+                        <!-- Name -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                                <input type="text" id="first_name"
+                                    class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                                    placeholder="John">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                                <input type="text" id="last_name"
+                                    class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                                    placeholder="Doe">
+                            </div>
+                        </div>
+
+                        <!-- Contact -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                                <input type="tel"
+                                    class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                                    placeholder="+1 (555) 000-0000">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                                <input type="email" id="guest_email"
+                                    class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                                    placeholder="john@example.com" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition duration-200 transform hover:-translate-y-0.5 text-lg mt-8">
+                        Book Now
+                    </button>
+                </form>
+
+                <!-- Success Message Container -->
+                <div id="success-message"
+                    class="hidden mt-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
+                    <p class="font-semibold">Booking Request Sent!</p>
+                    <p class="text-sm">Your reservation is now PENDING. We will contact you shortly.</p>
+                </div>
+            </div>
+
+            <!-- Right Column: Room Preview -->
+            <div class="space-y-6">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden sticky top-8">
+                    <div class="relative h-64">
+                        <img src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800&auto=format&fit=crop&q=60"
+                            alt="Room Preview" class="w-full h-full object-cover">
+                        <div
+                            class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-blue-800 shadow-sm">
+                            PREMIUM
+                        </div>
+                    </div>
+
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900">Deluxe Ocean View</h3>
+                                <p class="text-sm text-gray-500">King Size Bed • Balcony</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="block text-2xl font-bold text-blue-600">$249</span>
+                                <span class="text-xs text-gray-400">per night</span>
+                            </div>
+                        </div>
+
+                        <p class="text-gray-600 text-sm mb-6 leading-relaxed">
+                            Experience ultimate relaxation in our Deluxe Ocean View room. Featuring a private balcony
+                            with stunning sunset views, a spacious king-size bed, and a modern en-suite bathroom with a
+                            rainfall shower.
+                        </p>
+
+                        <h4 class="font-semibold text-sm text-gray-800 mb-3">Room Features</h4>
+                        <div class="grid grid-cols-2 gap-3 text-sm text-gray-600">
+                            <div class="flex items-center">
+                                <span class="mr-2">📶</span> Free Wi-Fi
+                            </div>
+                            <div class="flex items-center">
+                                <span class="mr-2">❄️</span> Air Conditioning
+                            </div>
+                            <div class="flex items-center">
+                                <span class="mr-2">📺</span> Smart TV
+                            </div>
+                            <div class="flex items-center">
+                                <span class="mr-2">☕</span> Coffee Maker
+                            </div>
+                            <div class="flex items-center">
+                                <span class="mr-2">🔒</span> Safe
+                            </div>
+                            <div class="flex items-center">
+                                <span class="mr-2">🚿</span> Rainfall Shower
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-6 py-4 border-t border-gray-100">
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="text-gray-500">Total for 2 nights</span>
+                            <span class="font-bold text-gray-900">$498.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Minimal inline script for demo interactions
+        document.getElementById('booking-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            // Show success message
+            const btn = this.querySelector('button[type="submit"]');
+            const originalText = btn.innerText;
+
+            btn.innerText = 'Processing...';
+            btn.disabled = true;
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+
+            setTimeout(() => {
+                document.getElementById('success-message').classList.remove('hidden');
+                btn.innerText = 'Booked Successfully';
+                btn.classList.replace('bg-blue-600', 'bg-green-600');
+                btn.classList.replace('hover:bg-blue-700', 'hover:bg-green-700');
+
+                // In a real app, we would send data to backend here
+                // For now, let's try to call the existing API if possible
+                const guestName = (document.getElementById('first_name').value + ' ' + document.getElementById('last_name').value).trim();
+                const guestEmail = document.getElementById('guest_email').value;
+                const roomId = document.getElementById('room_id').value;
+                const checkIn = document.getElementById('check_in_date').value;
+                const checkOut = document.getElementById('check_out_date').value;
+
+                if (roomId && checkIn && checkOut) {
+                    $.ajax({
+                        url: '/api/reservations',
+                        method: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({
+                            guest_name: guestName,
+                            guest_email: guestEmail,
+                            room_id: roomId,
+                            check_in_date: checkIn,
+                            check_out_date: checkOut
+                        }),
+                        success: function (res) {
+                            console.log('Reservation saved:', res);
+                        }
+                    });
+                }
+
+            }, 1500);
+        });
+
+        // Load rooms for the select dropdown
+        $(document).ready(function () {
+            $.get('/api/rooms', function (rooms) {
+                const select = $('#room_id');
+                select.empty();
+                select.append('<option value="">Select a Room</option>');
+                rooms.forEach(room => {
+                    if (room.status === 'AVAILABLE') {
+                        select.append(`<option value="${room.id}">Room ${room.room_number} (${room.room_type}) - $${room.base_price}</option>`);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

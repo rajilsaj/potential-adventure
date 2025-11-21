@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Rooms - HRS</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/static/js/admin.js"></script>
+</head>
+
+<body>
+    <header>
+        <h1>Manage Rooms</h1>
+        <nav>
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/rooms">Manage Rooms</a>
+            <a href="/admin/reservations">Manage Reservations</a>
+            <a href="#" id="logout-btn">Logout</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h2>Add New Room</h2>
+            <form id="create-room-form">
+                <label>Room Number:</label>
+                <input type="text" id="room_number" required>
+
+                <label>Floor:</label>
+                <input type="number" id="floor" required>
+
+                <label>Type:</label>
+                <select id="room_type" required>
+                    <option value="SINGLE">Single</option>
+                    <option value="DOUBLE">Double</option>
+                    <option value="SUITE">Suite</option>
+                </select>
+
+                <label>Capacity:</label>
+                <input type="number" id="capacity" required>
+
+                <label>Base Price:</label>
+                <input type="number" step="0.01" id="base_price" required>
+
+                <button type="submit">Add Room</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>All Rooms</h2>
+            <table id="rooms-table">
+                <thead>
+                    <tr>
+                        <th>Number</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Price</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="rooms-table-body">
+                    <!-- Loaded via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+
+</html>

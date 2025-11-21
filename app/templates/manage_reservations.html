@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Reservations - HRS</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/static/js/admin.js"></script>
+</head>
+
+<body>
+    <header>
+        <h1>Manage Reservations</h1>
+        <nav>
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/rooms">Manage Rooms</a>
+            <a href="/admin/reservations">Manage Reservations</a>
+            <a href="#" id="logout-btn">Logout</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h2>All Reservations</h2>
+            <!-- Filter could go here -->
+            <table id="reservations-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Guest Name</th>
+                        <th>Room ID</th>
+                        <th>Dates</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="reservations-table-body">
+                    <!-- Loaded via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+
+</html>

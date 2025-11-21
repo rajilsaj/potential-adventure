@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - HRS</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/static/js/admin.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Admin Login</h1>
+        <nav>
+            <a href="/">Home</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="card" style="max-width: 400px; margin: 0 auto;">
+            <h2>Login</h2>
+            <form id="login-form">
+                <label for="username">Username:</label>
+                <input type="text" id="username" required style="width: 100%; box-sizing: border-box;">
+
+                <label for="password">Password:</label>
+                <input type="password" id="password" required style="width: 100%; box-sizing: border-box;">
+
+                <button type="submit" style="width: 100%; margin-top: 1rem;">Login</button>
+                <p id="login-error" class="error"></p>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
