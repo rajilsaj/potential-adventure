@@ -1,6 +1,6 @@
 from app import create_app
 from app.extensions import db, bcrypt
-from app.models import User, Room, Reservation
+from app.models import User, Customer, Room, Reservation
 from datetime import date, timedelta
 import random
 
@@ -29,6 +29,18 @@ def seed_data():
         db.session.add(staff)
         db.session.commit()
         print("✓ Created staff user (staff/staff123)")
+        
+        # Create Sample Customers
+        customer_pw = bcrypt.generate_password_hash('customer123').decode('utf-8')
+        customers = [
+            Customer(email='john@example.com', password_hash=customer_pw, full_name='John Doe', phone='+1234567890'),
+            Customer(email='jane@example.com', password_hash=customer_pw, full_name='Jane Smith', phone='+1234567891'),
+            Customer(email='bob@example.com', password_hash=customer_pw, full_name='Bob Johnson', phone='+1234567892'),
+        ]
+        for customer in customers:
+            db.session.add(customer)
+        db.session.commit()
+        print(f"✓ Created {len(customers)} sample customers (password: customer123)")
         
         # Create 120 Rooms across 12 floors
         room_types = ['SINGLE', 'DOUBLE', 'SUITE']

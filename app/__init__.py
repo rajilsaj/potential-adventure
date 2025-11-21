@@ -31,6 +31,7 @@ def create_app():
 
     # Register blueprints
     from .routes.auth_api import auth_bp
+    from .routes.customer_auth_api import customer_auth_bp
     from .routes.rooms_api import rooms_bp
     from .routes.customers_api import customers_bp
     from .routes.reservations_api import reservations_bp
@@ -38,6 +39,7 @@ def create_app():
     from .routes.frontend import frontend_bp
 
     app.register_blueprint(auth_bp)
+    app.register_blueprint(customer_auth_bp)
     app.register_blueprint(rooms_bp)
     app.register_blueprint(customers_bp)
     app.register_blueprint(reservations_bp)

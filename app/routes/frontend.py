@@ -48,6 +48,7 @@ def rooms():
 
 @frontend_bp.route('/room/<int:room_id>', methods=['GET', 'POST'])
 def room_checkout(room_id):
+    from app.models import Customer
     room = Room.query.get_or_404(room_id)
     
     if request.method == 'POST':
@@ -80,10 +81,26 @@ def room_checkout(room_id):
         
         total_amount = days * float(room.base_price)
         
+        # Determine customer_id and creator_id
+        customer_id = None
+        creator_id = None
+        
+        try:
+            if current_user.is_authenticated:
+                # Check if logged in as customer
+                if isinstance(current_user._get_current_object(), Customer):
+                    customer_id = current_user.id
+                # Check if logged in as admin/staff
+                else:
+                    creator_id = current_user.id
+        except:
+            pass
+        
         # Create reservation
         new_reservation = Reservation(
             room_id=room.id,
-            created_by=current_user.id if current_user.is_authenticated else None,
+            created_by=creator_id,
+            customer_id=customer_id,
             guest_name=guest_name,
             guest_email=guest_email,
             check_in_date=check_in_date,
@@ -101,7 +118,19 @@ def room_checkout(room_id):
         session['booking_email'] = guest_email
         return redirect(url_for('frontend.booking_success'))
     
-    return render_template('room_checkout.html', room=room)
+    # GET request - pre-fill form if customer is logged in
+    customer_data = None
+    try:
+        if current_user.is_authenticated and isinstance(current_user._get_current_object(), Customer):
+            customer_data = {
+                'full_name': current_user.full_name,
+                'email': current_user.email,
+                'phone': current_user.phone or ''
+            }
+    except:
+        pass
+    
+    return render_template('room_checkout.html', room=room, customer_data=customer_data)
 
 @frontend_bp.route('/booking-success')
 def booking_success():
