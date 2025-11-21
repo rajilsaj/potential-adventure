@@ -46,14 +46,69 @@ def rooms():
                          min_price=min_price,
                          max_price=max_price)
 
-@frontend_bp.route('/room/<int:room_id>')
+@frontend_bp.route('/room/<int:room_id>', methods=['GET', 'POST'])
 def room_checkout(room_id):
     room = Room.query.get_or_404(room_id)
+    
+    if request.method == 'POST':
+        # Handle booking form submission
+        from datetime import datetime
+        from app.extensions import db
+        
+        # Get form data
+        guest_name = request.form.get('guest_name')
+        guest_email = request.form.get('guest_email')
+        guest_phone = request.form.get('guest_phone')
+        check_in_str = request.form.get('check_in_date')
+        check_out_str = request.form.get('check_out_date')
+        num_guests = request.form.get('num_guests', 1, type=int)
+        
+        # Validate
+        if not all([guest_name, guest_email, check_in_str, check_out_str]):
+            return render_template('room_checkout.html', room=room, error="All fields are required")
+        
+        try:
+            check_in_date = datetime.strptime(check_in_str, '%Y-%m-%d').date()
+            check_out_date = datetime.strptime(check_out_str, '%Y-%m-%d').date()
+        except ValueError:
+            return render_template('room_checkout.html', room=room, error="Invalid date format")
+        
+        # Calculate total
+        days = (check_out_date - check_in_date).days
+        if days <= 0:
+            return render_template('room_checkout.html', room=room, error="Check-out must be after check-in")
+        
+        total_amount = days * float(room.base_price)
+        
+        # Create reservation
+        new_reservation = Reservation(
+            room_id=room.id,
+            created_by=current_user.id if current_user.is_authenticated else None,
+            guest_name=guest_name,
+            guest_email=guest_email,
+            check_in_date=check_in_date,
+            check_out_date=check_out_date,
+            status='PENDING',
+            total_amount=total_amount
+        )
+        
+        db.session.add(new_reservation)
+        db.session.commit()
+        
+        # Redirect to success page with booking ID
+        from flask import redirect, url_for, session
+        session['booking_id'] = new_reservation.id
+        session['booking_email'] = guest_email
+        return redirect(url_for('frontend.booking_success'))
+    
     return render_template('room_checkout.html', room=room)
 
 @frontend_bp.route('/booking-success')
 def booking_success():
-    return render_template('booking_success.html')
+    from flask import session
+    booking_id = session.get('booking_id')
+    booking_email = session.get('booking_email')
+    return render_template('booking_success.html', booking_id=booking_id, booking_email=booking_email)
 
 @frontend_bp.route('/admin/login')
 def admin_login():

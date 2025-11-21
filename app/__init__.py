@@ -22,11 +22,12 @@ def create_app():
     login_manager.login_view = 'frontend.admin_login'
     login_manager.login_message = 'Please log in to access this page.'
     
-    # Import current_user AFTER login_manager is initialized
-    # and make it available in all templates
-    with app.app_context():
+    # Make current_user available in templates
+    # Import here to avoid circular imports
+    @app.context_processor
+    def inject_current_user():
         from flask_login import current_user
-        app.jinja_env.globals['current_user'] = current_user
+        return dict(current_user=current_user)
 
     # Register blueprints
     from .routes.auth_api import auth_bp
