@@ -1,0 +1,12 @@
+# Python cache
+__pycache__/
+
+# SSH keys or sensitive files
+envienvi
+envienvi.pub
+
+# Any other private files you don't want on GitHub
+*.key
+*.pem
+*.env
+
