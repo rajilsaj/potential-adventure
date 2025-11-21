@@ -27,7 +27,7 @@
                         <div class="rounded-md shadow">
                             <a href="{{ url_for('frontend.rooms') }}"
                                 class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary hover:bg-indigo-700 md:py-4 md:text-lg md:px-10">
-                                View Rooms
+                                View All Rooms
                             </a>
                         </div>
                     </div>
@@ -50,84 +50,154 @@
                 Our Featured Rooms
             </h2>
             <p class="mt-4 max-w-2xl text-xl text-gray-500 mx-auto">
-                Choose from our selection of premium rooms designed for your comfort.
+                Choose from our selection of <span id="total-rooms">120</span> premium rooms designed for your comfort.
             </p>
         </div>
 
-        <div class="mt-10 grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            <!-- Room Card 1 -->
-            <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow duration-300">
-                <img class="h-48 w-full object-cover"
-                    src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-                    alt="Deluxe Room">
-                <div class="px-6 py-4">
-                    <div class="flex justify-between items-baseline">
-                        <h3 class="text-lg font-medium text-gray-900">Deluxe Room</h3>
-                        <span class="text-sm text-gray-500">2 Guests</span>
-                    </div>
-                    <p class="mt-2 text-sm text-gray-500">
-                        Spacious room with a king-size bed and city view.
-                    </p>
-                    <div class="mt-4 flex items-center justify-between">
-                        <span class="text-xl font-bold text-primary">$150 <span
-                                class="text-sm font-normal text-gray-500">/ night</span></span>
-                        <a href="{{ url_for('frontend.rooms') }}"
-                            class="text-primary hover:text-indigo-900 font-medium text-sm">View Details &rarr;</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Room Card 2 -->
-            <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow duration-300">
-                <img class="h-48 w-full object-cover"
-                    src="https://images.unsplash.com/photo-1590490360182-f33efe29a79d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-                    alt="Executive Suite">
-                <div class="px-6 py-4">
-                    <div class="flex justify-between items-baseline">
-                        <h3 class="text-lg font-medium text-gray-900">Executive Suite</h3>
-                        <span class="text-sm text-gray-500">4 Guests</span>
-                    </div>
-                    <p class="mt-2 text-sm text-gray-500">
-                        Luxury suite with separate living area and premium amenities.
-                    </p>
-                    <div class="mt-4 flex items-center justify-between">
-                        <span class="text-xl font-bold text-primary">$250 <span
-                                class="text-sm font-normal text-gray-500">/ night</span></span>
-                        <a href="{{ url_for('frontend.rooms') }}"
-                            class="text-primary hover:text-indigo-900 font-medium text-sm">View Details &rarr;</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Room Card 3 -->
-            <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow duration-300">
-                <img class="h-48 w-full object-cover"
-                    src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-                    alt="Single Room">
-                <div class="px-6 py-4">
-                    <div class="flex justify-between items-baseline">
-                        <h3 class="text-lg font-medium text-gray-900">Single Room</h3>
-                        <span class="text-sm text-gray-500">1 Guest</span>
-                    </div>
-                    <p class="mt-2 text-sm text-gray-500">
-                        Cozy room perfect for solo travelers.
-                    </p>
-                    <div class="mt-4 flex items-center justify-between">
-                        <span class="text-xl font-bold text-primary">$100 <span
-                                class="text-sm font-normal text-gray-500">/ night</span></span>
-                        <a href="{{ url_for('frontend.rooms') }}"
-                            class="text-primary hover:text-indigo-900 font-medium text-sm">View Details &rarr;</a>
-                    </div>
-                </div>
-            </div>
+        <!-- Rooms Grid (Dynamic) -->
+        <div id="rooms-grid" class="mt-10 grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            <!-- Rooms will be loaded here dynamically -->
         </div>
 
-        <div class="mt-12 text-center">
+        <!-- Loading Indicator -->
+        <div id="loading" class="hidden mt-8 text-center">
+            <svg class="animate-spin h-8 w-8 text-primary mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none"
+                viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                </path>
+            </svg>
+            <p class="mt-2 text-gray-500">Loading more rooms...</p>
+        </div>
+
+        <!-- Load More Button -->
+        <div id="load-more-container" class="mt-12 text-center">
+            <button id="load-more-btn"
+                class="inline-flex items-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+                Load More Rooms
+            </button>
+            <p class="mt-2 text-sm text-gray-500">
+                Showing <span id="showing-count">0</span> of <span id="total-count">0</span> rooms
+            </p>
+        </div>
+
+        <!-- No More Rooms Message -->
+        <div id="no-more-rooms" class="hidden mt-12 text-center">
+            <p class="text-gray-500">You've viewed all available rooms!</p>
             <a href="{{ url_for('frontend.rooms') }}"
-                class="inline-flex items-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                View All Rooms
+                class="mt-4 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-indigo-700">
+                Browse All Rooms
             </a>
         </div>
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    let currentPage = 1;
+    const perPage = 5;
+    let totalRooms = 0;
+    let loadedRooms = 0;
+
+    // Room type images
+    const roomImages = {
+        'SINGLE': 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+        'DOUBLE': 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+        'SUITE': 'https://images.unsplash.com/photo-1590490360182-f33efe29a79d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
+    };
+
+    function createRoomCard(room) {
+        const image = roomImages[room.room_type] || roomImages['DOUBLE'];
+        const capacity = room.capacity > 1 ? `${room.capacity} Guests` : '1 Guest';
+
+        return `
+        <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow duration-300 flex flex-col">
+            <div class="relative">
+                <img class="h-48 w-full object-cover" src="${image}" alt="${room.room_type} Room">
+                <div class="absolute top-0 right-0 bg-secondary text-white px-3 py-1 m-2 rounded-full text-xs font-bold uppercase">
+                    ${room.status}
+                </div>
+            </div>
+            <div class="px-6 py-4 flex-grow">
+                <div class="flex justify-between items-baseline">
+                    <h3 class="text-lg font-medium text-gray-900">${room.room_type.charAt(0) + room.room_type.slice(1).toLowerCase()} Room</h3>
+                    <span class="text-sm text-gray-500">${capacity}</span>
+                </div>
+                <p class="mt-2 text-sm text-gray-500">
+                    Room ${room.room_number} on Floor ${room.floor}.
+                </p>
+                <div class="mt-4 flex space-x-2">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800">WiFi</span>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800">TV</span>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800">AC</span>
+                </div>
+            </div>
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
+                <span class="text-xl font-bold text-primary">$${room.base_price} <span class="text-sm font-normal text-gray-500">/ night</span></span>
+                <a href="/room/${room.id}" class="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-md text-sm font-medium">
+                    Book Now
+                </a>
+            </div>
+        </div>
+    `;
+    }
+
+    function loadRooms() {
+        $('#loading').removeClass('hidden');
+        $('#load-more-btn').prop('disabled', true);
+
+        $.ajax({
+            url: '/api/rooms',
+            method: 'GET',
+            data: {
+                page: currentPage,
+                per_page: perPage,
+                status: 'AVAILABLE'
+            },
+            success: function (data) {
+                totalRooms = data.total;
+                $('#total-rooms').text(totalRooms);
+                $('#total-count').text(totalRooms);
+
+                // Append rooms to grid
+                data.rooms.forEach(room => {
+                    $('#rooms-grid').append(createRoomCard(room));
+                    loadedRooms++;
+                });
+
+                $('#showing-count').text(loadedRooms);
+
+                // Check if there are more rooms
+                if (data.has_next) {
+                    currentPage++;
+                    $('#load-more-btn').prop('disabled', false);
+                } else {
+                    $('#load-more-container').addClass('hidden');
+                    $('#no-more-rooms').removeClass('hidden');
+                }
+
+                $('#loading').addClass('hidden');
+            },
+            error: function () {
+                alert('Error loading rooms');
+                $('#loading').addClass('hidden');
+                $('#load-more-btn').prop('disabled', false);
+            }
+        });
+    }
+
+    // Load initial rooms on page load
+    $(document).ready(function () {
+        loadRooms();
+
+        // Load more button click handler
+        $('#load-more-btn').click(function () {
+            loadRooms();
+        });
+    });
+</script>
 {% endblock %}

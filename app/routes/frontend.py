@@ -1,6 +1,7 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, redirect, url_for, session
 from flask_login import login_required, current_user
 from app.models import Room, Reservation
+from datetime import datetime
 
 frontend_bp = Blueprint('frontend', __name__)
 
@@ -55,12 +56,12 @@ def rooms():
 @frontend_bp.route('/room/<int:room_id>', methods=['GET', 'POST'])
 def room_checkout(room_id):
     from app.models import Customer
+    from app.extensions import db
+    
     room = Room.query.get_or_404(room_id)
     
     if request.method == 'POST':
         # Handle booking form submission
-        from datetime import datetime
-        from app.extensions import db
         
         # Get form data
         guest_name = request.form.get('guest_name')
@@ -87,19 +88,22 @@ def room_checkout(room_id):
         
         total_amount = days * float(room.base_price)
         
-        # Determine customer_id and creator_id
+        # Determine customer_id and creator_id - safely check current_user
         customer_id = None
         creator_id = None
         
         try:
-            if current_user.is_authenticated:
+            # Import current_user here to avoid issues if Flask-Login not configured
+            from flask_login import current_user as cu
+            if cu.is_authenticated:
                 # Check if logged in as customer
-                if isinstance(current_user._get_current_object(), Customer):
-                    customer_id = current_user.id
+                if isinstance(cu._get_current_object(), Customer):
+                    customer_id = cu.id
                 # Check if logged in as admin/staff
                 else:
-                    creator_id = current_user.id
-        except:
+                    creator_id = cu.id
+        except Exception:
+            # If current_user is not available or any error, just continue as guest
             pass
         
         # Create reservation
@@ -119,7 +123,6 @@ def room_checkout(room_id):
         db.session.commit()
         
         # Redirect to success page with booking ID
-        from flask import redirect, url_for, session
         session['booking_id'] = new_reservation.id
         session['booking_email'] = guest_email
         return redirect(url_for('frontend.booking_success'))
@@ -127,13 +130,15 @@ def room_checkout(room_id):
     # GET request - pre-fill form if customer is logged in
     customer_data = None
     try:
-        if current_user.is_authenticated and isinstance(current_user._get_current_object(), Customer):
+        from flask_login import current_user as cu
+        if cu.is_authenticated and isinstance(cu._get_current_object(), Customer):
             customer_data = {
-                'full_name': current_user.full_name,
-                'email': current_user.email,
-                'phone': current_user.phone or ''
+                'full_name': cu.full_name,
+                'email': cu.email,
+                'phone': cu.phone or ''
             }
-    except:
+    except Exception:
+        # If current_user not available, just show empty form
         pass
     
     return render_template('room_checkout.html', room=room, customer_data=customer_data)
