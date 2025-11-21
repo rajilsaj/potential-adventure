@@ -16,42 +16,34 @@ class User(db.Model, UserMixin):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+    # Relationship to reservations created by this user
+    created_reservations = db.relationship('Reservation', backref='creator', lazy=True, foreign_keys='Reservation.created_by')
+
     def get_id(self):
         return str(self.id)
-
-class Customer(db.Model):
-    __tablename__ = 'customers'
-    
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    full_name = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    phone = db.Column(db.String(20))
-    password_hash = db.Column(db.String(255), nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
-    reservations = db.relationship('Reservation', backref='customer', lazy=True)
 
 class Room(db.Model):
     __tablename__ = 'rooms'
     
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     room_number = db.Column(db.String(20), unique=True, nullable=False)
-    floor = db.Column(db.Integer)
-    room_type = db.Column(db.Enum('SINGLE', 'DOUBLE', 'SUITE'), nullable=False)
+    floor = db.Column(db.Integer, nullable=True)
+    room_type = db.Column(db.Enum('SINGLE', 'DOUBLE', 'SUITE'), nullable=False, default='SINGLE')
     capacity = db.Column(db.Integer, nullable=False)
     status = db.Column(db.Enum('AVAILABLE', 'OUT_OF_SERVICE'), nullable=False, default='AVAILABLE')
     base_price = db.Column(db.Numeric(10, 2), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
+    # Relationship to reservations
     reservations = db.relationship('Reservation', backref='room', lazy=True)
 
 class Reservation(db.Model):
     __tablename__ = 'reservations'
     
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable=True)
-    room_id = db.Column(db.Integer, db.ForeignKey('rooms.id'), nullable=False)
+    room_id = db.Column(db.Integer, db.ForeignKey('rooms.id', ondelete='RESTRICT', onupdate='CASCADE'), nullable=False)
+    created_by = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='SET NULL', onupdate='CASCADE'), nullable=True)
     guest_name = db.Column(db.String(100), nullable=False)
     guest_email = db.Column(db.String(120), nullable=False)
     check_in_date = db.Column(db.Date, nullable=False)
