@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
-from app.models import Reservation, Customer, Room
+from app.models import Reservation, Room
 from app.extensions import db
 from datetime import datetime
 
@@ -23,7 +23,6 @@ def get_reservations():
     for res in reservations:
         result.append({
             'id': res.id,
-            'customer_id': res.customer_id,
             'room_id': res.room_id,
             'guest_name': res.guest_name,
             'guest_email': res.guest_email,
@@ -40,7 +39,6 @@ def get_reservation(id):
     # Ideally check permissions here (admin or own reservation)
     return jsonify({
         'id': res.id,
-        'customer_id': res.customer_id,
         'room_id': res.room_id,
         'guest_name': res.guest_name,
         'guest_email': res.guest_email,
@@ -54,59 +52,43 @@ def get_reservation(id):
 def create_reservation():
     data = request.get_json()
     
-    customer_id = data.get('customer_id')
     guest_name = data.get('guest_name')
     guest_email = data.get('guest_email')
     room_id = data.get('room_id')
     check_in_str = data.get('check_in_date')
     check_out_str = data.get('check_out_date')
     
+    # Validate required fields
     if not room_id or not check_in_str or not check_out_str:
-        return jsonify({'error': 'Missing required fields'}), 400
+        return jsonify({'error': 'Missing required fields: room_id, check_in_date, check_out_date'}), 400
+    
+    if not guest_name or not guest_email:
+        return jsonify({'error': 'Missing required fields: guest_name, guest_email'}), 400
 
     # Parse dates
     try:
         check_in_date = datetime.strptime(check_in_str, '%Y-%m-%d').date()
         check_out_date = datetime.strptime(check_out_str, '%Y-%m-%d').date()
     except ValueError:
-        return jsonify({'error': 'Invalid date format (YYYY-MM-DD)'}), 400
+        return jsonify({'error': 'Invalid date format (use YYYY-MM-DD)'}), 400
 
-    # Handle customer logic
-    if not customer_id:
-        if not guest_name or not guest_email:
-             return jsonify({'error': 'Must provide customer_id OR guest_name and guest_email'}), 400
-        
-        # Check if customer exists by email, otherwise create? 
-        # Prompt says "customer_id OR guest_name + guest_email". 
-        # If guest info provided, we can either create a customer or just store it in reservation.
-        # The schema has customer_id as NULLable, but guest_name/email as NOT NULL.
-        # So we always need guest_name/email in reservation.
-        
-        # Let's try to find customer by email to link if possible, or just leave null if not required to create one.
-        # But for simplicity, let's just fill the reservation fields.
-        pass
-    else:
-        customer = Customer.query.get(customer_id)
-        if customer:
-            guest_name = customer.full_name
-            guest_email = customer.email
-        else:
-            return jsonify({'error': 'Invalid customer_id'}), 400
-
-    # Calculate total amount (simple logic: days * base_price)
+    # Validate room exists
     room = Room.query.get(room_id)
     if not room:
         return jsonify({'error': 'Invalid room_id'}), 400
-        
+    
+    # Validate dates
     days = (check_out_date - check_in_date).days
     if days <= 0:
         return jsonify({'error': 'Check-out must be after check-in'}), 400
-        
+    
+    # Calculate total amount
     total_amount = days * float(room.base_price)
 
+    # Create reservation (created_by will be set if user is logged in)
     new_res = Reservation(
-        customer_id=customer_id,
         room_id=room_id,
+        created_by=current_user.id if current_user.is_authenticated else None,
         guest_name=guest_name,
         guest_email=guest_email,
         check_in_date=check_in_date,
