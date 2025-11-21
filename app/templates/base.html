@@ -12,6 +12,7 @@
                 extend: {
                     colors: {
                         primary: {
+                            DEFAULT: '#4f46e5',  // This is the key fix!
                             50: '#eef2ff',
                             100: '#e0e7ff',
                             200: '#c7d2fe',
@@ -23,7 +24,11 @@
                             800: '#3730a3',
                             900: '#312e81',
                         },
-                        secondary: '#10b981',
+                        secondary: {
+                            DEFAULT: '#10b981',
+                            500: '#10b981',
+                            600: '#059669',
+                        }
                     },
                     fontFamily: {
                         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
@@ -62,6 +67,48 @@
 
         ::-webkit-scrollbar-thumb:hover {
             background: #4f46e5;
+        }
+
+        /* CRITICAL FIX: Fallback for bg-primary */
+        .bg-primary {
+            background-color: #4f46e5 !important;
+        }
+
+        .hover\:bg-indigo-700:hover {
+            background-color: #4338ca !important;
+        }
+
+        .text-primary {
+            color: #4f46e5 !important;
+        }
+
+        .border-primary {
+            border-color: #4f46e5 !important;
+        }
+
+        .ring-primary {
+            --tw-ring-color: #4f46e5 !important;
+        }
+
+        .focus\:ring-primary:focus {
+            --tw-ring-color: #4f46e5 !important;
+        }
+
+        .focus\:border-primary:focus {
+            border-color: #4f46e5 !important;
+        }
+
+        /* Secondary color fallback */
+        .bg-secondary {
+            background-color: #10b981 !important;
+        }
+
+        .hover\:bg-green-600:hover {
+            background-color: #059669 !important;
+        }
+
+        .text-secondary {
+            color: #10b981 !important;
         }
 
         /* Smooth transitions */
