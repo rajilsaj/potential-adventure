@@ -112,6 +112,20 @@ def seed_data():
             total = float(room.base_price) * nights
             status = random.choice(statuses)
             
+            # Map old status to new reservation_status
+            status_map = {
+                'PENDING': 'P',
+                'BOOKED': 'C',
+                'CHECKED_IN': 'I',
+                'CHECKED_OUT': 'O',
+                'CANCELLED': 'X'
+            }
+            reservation_status = status_map.get(status, 'P')
+            
+            # Random reservation type
+            res_types = ['C', 'D', 'I', 'P']
+            reservation_type = random.choice(res_types)
+            
             reservation = Reservation(
                 room_id=room.id,
                 created_by=admin.id if i % 2 == 0 else staff.id,
@@ -119,8 +133,13 @@ def seed_data():
                 guest_email=guest_email,
                 check_in_date=check_in,
                 check_out_date=check_out,
-                status=status,
-                total_amount=total
+                arrival_date=check_in,  # OOAD: same as check_in_date
+                number_of_days=nights,  # OOAD: number of nights
+                reservation_type=reservation_type,  # OOAD: C/D/I/P
+                reservation_status=reservation_status,  # OOAD: P/C/I/O/X
+                status=status,  # Legacy status
+                total_amount=total,
+                amount_bill_paid=0.0,  # OOAD: default to 0
             )
             db.session.add(reservation)
         
