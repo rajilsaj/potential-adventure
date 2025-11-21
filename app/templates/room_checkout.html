@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+
+{% block title %}Book Room - Hotel Reservation System{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 min-h-screen py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="lg:grid lg:grid-cols-12 lg:gap-x-8">
+
+            <!-- Left Column: Room Details -->
+            <div class="lg:col-span-5">
+                <div class="bg-white shadow rounded-lg overflow-hidden">
+                    <img class="h-64 w-full object-cover"
+                        src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                        alt="Room Image">
+                    <div class="px-6 py-8">
+                        <h2 class="text-2xl font-bold text-gray-900">{{ room.room_type|title }} Room</h2>
+                        <p class="mt-2 text-gray-600">Room {{ room.room_number }} - Floor {{ room.floor }}</p>
+
+                        <div class="mt-6 border-t border-gray-200 pt-6">
+                            <h3 class="text-lg font-medium text-gray-900">Details</h3>
+                            <dl class="mt-4 space-y-4">
+                                <div class="flex justify-between">
+                                    <dt class="text-sm text-gray-500">Price per night</dt>
+                                    <dd class="text-sm font-medium text-gray-900">${{ room.base_price }}</dd>
+                                </div>
+                                <div class="flex justify-between">
+                                    <dt class="text-sm text-gray-500">Capacity</dt>
+                                    <dd class="text-sm font-medium text-gray-900">{{ room.capacity }} Guests</dd>
+                                </div>
+                            </dl>
+                        </div>
+
+                        <div class="mt-6 border-t border-gray-200 pt-6">
+                            <h3 class="text-lg font-medium text-gray-900">Amenities</h3>
+                            <ul class="mt-4 space-y-2">
+                                <li class="flex items-center text-sm text-gray-500">
+                                    <svg class="h-5 w-5 text-secondary mr-2" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    Free Wi-Fi
+                                </li>
+                                <li class="flex items-center text-sm text-gray-500">
+                                    <svg class="h-5 w-5 text-secondary mr-2" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    Flat-screen TV
+                                </li>
+                                <li class="flex items-center text-sm text-gray-500">
+                                    <svg class="h-5 w-5 text-secondary mr-2" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    Air Conditioning
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Booking Form -->
+            <div class="mt-8 lg:mt-0 lg:col-span-7">
+                <div class="bg-white shadow rounded-lg overflow-hidden">
+                    <!-- Step Indicator -->
+                    <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                        <nav aria-label="Progress">
+                            <ol class="flex items-center">
+                                <li class="relative pr-8 sm:pr-20">
+                                    <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                                        <div class="h-0.5 w-full bg-primary"></div>
+                                    </div>
+                                    <a href="#"
+                                        class="relative flex h-8 w-8 items-center justify-center rounded-full bg-primary hover:bg-indigo-900">
+                                        <span class="text-white text-sm font-bold">1</span>
+                                    </a>
+                                    <span class="absolute mt-2 text-xs font-medium text-primary">Details</span>
+                                </li>
+                                <li class="relative pr-8 sm:pr-20">
+                                    <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                                        <div class="h-0.5 w-full bg-gray-200" id="step-2-line"></div>
+                                    </div>
+                                    <a href="#"
+                                        class="relative flex h-8 w-8 items-center justify-center rounded-full bg-white border-2 border-gray-300 hover:border-gray-400"
+                                        id="step-2-circle">
+                                        <span class="text-gray-500 text-sm font-bold">2</span>
+                                    </a>
+                                    <span class="absolute mt-2 text-xs font-medium text-gray-500">Guest</span>
+                                </li>
+                                <li class="relative">
+                                    <a href="#"
+                                        class="relative flex h-8 w-8 items-center justify-center rounded-full bg-white border-2 border-gray-300 hover:border-gray-400"
+                                        id="step-3-circle">
+                                        <span class="text-gray-500 text-sm font-bold">3</span>
+                                    </a>
+                                    <span class="absolute mt-2 text-xs font-medium text-gray-500">Payment</span>
+                                </li>
+                            </ol>
+                        </nav>
+                    </div>
+
+                    <div class="px-6 py-8">
+                        <!-- Step 1: Booking Details -->
+                        <div id="step-1" class="step-content">
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">Booking Details</h3>
+                            <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                                <div class="sm:col-span-3">
+                                    <label for="check-in" class="block text-sm font-medium text-gray-700">Check-in
+                                        Date</label>
+                                    <input type="date" id="check-in"
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm p-2 border">
+                                </div>
+                                <div class="sm:col-span-3">
+                                    <label for="check-out" class="block text-sm font-medium text-gray-700">Check-out
+                                        Date</label>
+                                    <input type="date" id="check-out"
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm p-2 border">
+                                </div>
+                                <div class="sm:col-span-6">
+                                    <label for="guests" class="block text-sm font-medium text-gray-700">Number of
+                                        Guests</label>
+                                    <select id="guests"
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm p-2 border">
+                                        {% for i in range(1, room.capacity + 1) %}
+                                        <option value="{{ i }}">{{ i }} Guest{{ 's' if i > 1 else '' }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mt-6 flex justify-end">
+                                <button type="button" onclick="nextStep(2)"
+                                    class="bg-primary border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                                    Next: Guest Info
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Guest Info (Login/Register) -->
+                        <div id="step-2" class="step-content hidden">
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">Guest Information</h3>
+
+                            <!-- Tabs -->
+                            <div class="sm:hidden">
+                                <label for="tabs" class="sr-only">Select a tab</label>
+                                <select id="tabs" name="tabs"
+                                    class="block w-full focus:ring-primary focus:border-primary border-gray-300 rounded-md">
+                                    <option selected>Guest Checkout</option>
+                                    <option>Login</option>
+                                </select>
+                            </div>
+                            <div class="hidden sm:block">
+                                <div class="border-b border-gray-200">
+                                    <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                                        <a href="#"
+                                            class="border-primary text-primary whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+                                            aria-current="page">
+                                            Guest Checkout
+                                        </a>
+                                        <a href="#"
+                                            class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                                            Login (Optional)
+                                        </a>
+                                    </nav>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                                <div class="sm:col-span-3">
+                                    <label for="full-name" class="block text-sm font-medium text-gray-700">Full
+                                        Name</label>
+                                    <input type="text" id="full-name"
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm p-2 border">
+                                </div>
+                                <div class="sm:col-span-3">
+                                    <label for="email" class="block text-sm font-medium text-gray-700">Email
+                                        Address</label>
+                                    <input type="email" id="email"
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm p-2 border">
+                                </div>
+                                <div class="sm:col-span-3">
+                                    <label for="phone" class="block text-sm font-medium text-gray-700">Phone
+                                        Number</label>
+                                    <input type="tel" id="phone"
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm p-2 border">
+                                </div>
+                            </div>
+
+                            <div class="mt-6 flex justify-between">
+                                <button type="button" onclick="prevStep(1)"
+                                    class="bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                                    Back
+                                </button>
+                                <button type="button" onclick="nextStep(3)"
+                                    class="bg-primary border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                                    Next: Payment
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Payment -->
+                        <div id="step-3" class="step-content hidden">
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">Payment Details</h3>
+
+                            <div class="bg-gray-50 p-4 rounded-md mb-6">
+                                <div class="flex justify-between text-sm font-medium text-gray-900">
+                                    <span>Total Amount</span>
+                                    <span id="total-amount">$0.00</span>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">Based on <span id="night-count">0</span> nights at
+                                    ${{ room.base_price }}/night</p>
+                            </div>
+
+                            <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                                <div class="sm:col-span-6">
+                                    <label for="card-name" class="block text-sm font-medium text-gray-700">Name on
+                                        Card</label>
+                                    <input type="text" id="card-name"
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm p-2 border">
+                                </div>
+                                <div class="sm:col-span-4">
+                                    <label for="card-number" class="block text-sm font-medium text-gray-700">Card
+                                        Number</label>
+                                    <input type="text" id="card-number" placeholder="0000 0000 0000 0000"
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm p-2 border">
+                                </div>
+                                <div class="sm:col-span-1">
+                                    <label for="expiry" class="block text-sm font-medium text-gray-700">Expiry</label>
+                                    <input type="text" id="expiry" placeholder="MM/YY"
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm p-2 border">
+                                </div>
+                                <div class="sm:col-span-1">
+                                    <label for="cvc" class="block text-sm font-medium text-gray-700">CVC</label>
+                                    <input type="text" id="cvc" placeholder="123"
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm p-2 border">
+                                </div>
+                            </div>
+
+                            <div class="mt-6 flex justify-between">
+                                <button type="button" onclick="prevStep(2)"
+                                    class="bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                                    Back
+                                </button>
+                                <button type="button" onclick="submitBooking()"
+                                    class="bg-secondary border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary">
+                                    Confirm Booking
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const roomPrice = {{ room.base_price }};
+    const roomId = {{ room.id }};
+
+    function nextStep(step) {
+        $('.step-content').addClass('hidden');
+        $(`#step-${step}`).removeClass('hidden');
+
+        // Update stepper UI (simplified)
+        if (step === 2) {
+            $('#step-2-circle').addClass('bg-primary border-primary').removeClass('bg-white border-gray-300');
+            $('#step-2-circle span').addClass('text-white').removeClass('text-gray-500');
+            $('#step-2-line').addClass('bg-primary').removeClass('bg-gray-200');
+        }
+        if (step === 3) {
+            $('#step-3-circle').addClass('bg-primary border-primary').removeClass('bg-white border-gray-300');
+            $('#step-3-circle span').addClass('text-white').removeClass('text-gray-500');
+            calculateTotal();
+        }
+    }
+
+    function prevStep(step) {
+        $('.step-content').addClass('hidden');
+        $(`#step-${step}`).removeClass('hidden');
+    }
+
+    function calculateTotal() {
+        const checkIn = new Date($('#check-in').val());
+        const checkOut = new Date($('#check-out').val());
+
+        if (checkIn && checkOut && checkOut > checkIn) {
+            const diffTime = Math.abs(checkOut - checkIn);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const total = diffDays * roomPrice;
+
+            $('#night-count').text(diffDays);
+            $('#total-amount').text('$' + total.toFixed(2));
+        }
+    }
+
+    function submitBooking() {
+        const bookingData = {
+            room_id: roomId,
+            guest_name: $('#full-name').val(),
+            guest_email: $('#email').val(),
+            check_in_date: $('#check-in').val(),
+            check_out_date: $('#check-out').val()
+        };
+
+        $.ajax({
+            url: '/api/reservations',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(bookingData),
+            success: function (response) {
+                window.location.href = "{{ url_for('frontend.booking_success') }}";
+            },
+            error: function (xhr) {
+                alert('Error creating reservation: ' + xhr.responseJSON.error);
+            }
+        });
+    }
+</script>
+{% endblock %}
