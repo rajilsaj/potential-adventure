@@ -1,9 +1,11 @@
 # app/__init__.py
 
-from flask import Flask
-from .extensions import db  # SQLAlchemy instance
+from flask import Flask, render_template, g
+from .extensions import db, login_manager, bcrypt
 from .config import Config
 from dotenv import load_dotenv
+from flask_login import current_user
+from sqlalchemy import text
 import os
 
 def create_app():
@@ -15,6 +17,15 @@ def create_app():
 
     # Init extensions
     db.init_app(app)
+    login_manager.init_app(app)
+    bcrypt.init_app(app)
+    
+    # Configure Flask-Login
+    login_manager.login_view = 'frontend.admin_login'
+    login_manager.login_message = 'Please log in to access this page.'
+    
+    # Make current_user available in all templates
+    app.jinja_env.globals['current_user'] = current_user
 
     # Register blueprints
     from .routes.auth_api import auth_bp
@@ -30,6 +41,14 @@ def create_app():
     app.register_blueprint(reservations_bp)
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(frontend_bp)
+
+    @app.before_request
+    def check_db_connection():
+        try:
+            db.session.execute(text('SELECT 1'))
+            g.db_connected = True
+        except Exception as e:
+            return render_template('db_error.html'), 500
 
     return app
 

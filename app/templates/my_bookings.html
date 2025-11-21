@@ -12,7 +12,9 @@
                     <p class="mt-1 max-w-2xl text-sm text-gray-500">History of your reservations.</p>
                 </div>
                 <div class="text-sm text-gray-500">
+                    {% if current_user is defined and current_user.is_authenticated %}
                     Logged in as <span class="font-semibold text-gray-900">{{ current_user.username }}</span>
+                    {% endif %}
                 </div>
             </div>
             <div class="border-t border-gray-200">
