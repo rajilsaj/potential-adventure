@@ -28,4 +28,15 @@ def create_app(config_class=Config):
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(frontend_bp)
 
+    from sqlalchemy import text
+    from flask import render_template, g
+
+    @app.before_request
+    def check_db_connection():
+        try:
+            db.session.execute(text('SELECT 1'))
+            g.db_connected = True
+        except Exception as e:
+            return render_template('db_error.html'), 500
+
     return app
