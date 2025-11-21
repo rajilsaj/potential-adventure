@@ -38,13 +38,19 @@ def rooms():
         page=page, per_page=10, error_out=False
     )
     
+    # Calculate pagination display values
+    start = (pagination.page - 1) * pagination.per_page + 1 if pagination.total > 0 else 0
+    end = min(pagination.page * pagination.per_page, pagination.total)
+    
     return render_template('rooms.html', 
                          rooms=pagination.items,
                          pagination=pagination,
                          search=search,
                          room_type=room_type,
                          min_price=min_price,
-                         max_price=max_price)
+                         max_price=max_price,
+                         start=start,
+                         end=end)
 
 @frontend_bp.route('/room/<int:room_id>', methods=['GET', 'POST'])
 def room_checkout(room_id):

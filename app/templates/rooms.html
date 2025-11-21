@@ -194,8 +194,7 @@
 
         <!-- Page Info -->
         <div class="mt-4 text-center text-sm text-gray-500">
-            Showing {{ ((pagination.page - 1) * 10) + 1 }} to {{ min(pagination.page * 10, pagination.total) }} of {{
-            pagination.total }} rooms
+            Showing {{ start }} to {{ end }} of {{ pagination.total }} rooms
         </div>
         {% endif %}
 
