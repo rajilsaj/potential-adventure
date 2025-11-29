@@ -53,6 +53,90 @@ def rooms():
                          start=start,
                          end=end)
 
+def validate_step1_dates(check_in_str, check_out_str, reservation_type='C'):
+    """
+    Validate Step 1 booking dates with field-level error messages.
+    
+    Returns:
+        tuple: (is_valid, errors_dict, nights)
+        - is_valid: bool indicating if validation passed
+        - errors_dict: dict with field names as keys and error messages as values
+        - nights: int number of nights (0 if invalid)
+    """
+    import re
+    from datetime import datetime, date
+    
+    errors = {}
+    nights = 0
+    
+    # Strip whitespace
+    check_in_str = check_in_str.strip() if check_in_str else ''
+    check_out_str = check_out_str.strip() if check_out_str else ''
+    
+    # Check if dates are empty (including whitespace-only)
+    if not check_in_str:
+        errors['check_in'] = 'Check-in date is required'
+    if not check_out_str:
+        errors['check_out'] = 'Check-out date is required'
+    
+    # If either is empty, return early
+    if errors:
+        return False, errors, 0
+    
+    # Validate date format (YYYY-MM-DD)
+    date_regex = re.compile(r'^\d{4}-\d{2}-\d{2}$')
+    
+    if not date_regex.match(check_in_str):
+        errors['check_in'] = 'Check-in date must be in format YYYY-MM-DD'
+    if not date_regex.match(check_out_str):
+        errors['check_out'] = 'Check-out date must be in format YYYY-MM-DD'
+    
+    # If format is invalid, return early
+    if errors:
+        return False, errors, 0
+    
+    # Try to parse dates
+    try:
+        check_in_date = datetime.strptime(check_in_str, '%Y-%m-%d').date()
+    except ValueError:
+        errors['check_in'] = 'Check-in date is not a valid date'
+    
+    try:
+        check_out_date = datetime.strptime(check_out_str, '%Y-%m-%d').date()
+    except ValueError:
+        errors['check_out'] = 'Check-out date is not a valid date'
+    
+    # If parsing failed, return early
+    if errors:
+        return False, errors, 0
+    
+    # Validate check-in is not in the past
+    today = date.today()
+    if check_in_date < today:
+        errors['check_in'] = 'Check-in date cannot be in the past'
+    
+    # Validate check-out is after check-in
+    if check_out_date <= check_in_date:
+        errors['check_out'] = 'Check-out date must be after check-in date'
+    
+    # If date logic is invalid, return early
+    if errors:
+        return False, errors, 0
+    
+    # Calculate nights
+    nights = (check_out_date - check_in_date).days
+    
+    # Validate 60-Days-in-Advance requirement
+    if reservation_type == 'D':
+        days_until_checkin = (check_in_date - today).days
+        if days_until_checkin < 60:
+            errors['check_in'] = f'60-Days-in-Advance reservations must be made at least 60 days before arrival. You are booking {days_until_checkin} days in advance.'
+    
+    # Final validation
+    is_valid = len(errors) == 0
+    return is_valid, errors, nights
+
+
 @frontend_bp.route('/room/<int:room_id>', methods=['GET', 'POST'])
 def room_checkout(room_id):
     from app.models import Customer
@@ -61,71 +145,9 @@ def room_checkout(room_id):
     room = Room.query.get_or_404(room_id)
     
     if request.method == 'POST':
-        # Handle booking form submission
-        
-        # Get form data
-        guest_name = request.form.get('guest_name')
-        guest_email = request.form.get('guest_email')
-        guest_phone = request.form.get('guest_phone')
-        check_in_str = request.form.get('check_in_date')
-        check_out_str = request.form.get('check_out_date')
-        num_guests = request.form.get('num_guests', 1, type=int)
-        
-        # Validate
-        if not all([guest_name, guest_email, check_in_str, check_out_str]):
-            return render_template('room_checkout.html', room=room, error="All fields are required")
-        
-        try:
-            check_in_date = datetime.strptime(check_in_str, '%Y-%m-%d').date()
-            check_out_date = datetime.strptime(check_out_str, '%Y-%m-%d').date()
-        except ValueError:
-            return render_template('room_checkout.html', room=room, error="Invalid date format")
-        
-        # Calculate total
-        days = (check_out_date - check_in_date).days
-        if days <= 0:
-            return render_template('room_checkout.html', room=room, error="Check-out must be after check-in")
-        
-        total_amount = days * float(room.base_price)
-        
-        # Determine customer_id and creator_id - safely check current_user
-        customer_id = None
-        creator_id = None
-        
-        try:
-            # Import current_user here to avoid issues if Flask-Login not configured
-            from flask_login import current_user as cu
-            if cu.is_authenticated:
-                # Check if logged in as customer
-                if isinstance(cu._get_current_object(), Customer):
-                    customer_id = cu.id
-                # Check if logged in as admin/staff
-                else:
-                    creator_id = cu.id
-        except Exception:
-            # If current_user is not available or any error, just continue as guest
-            pass
-        
-        # Create reservation
-        new_reservation = Reservation(
-            room_id=room.id,
-            created_by=creator_id,
-            customer_id=customer_id,
-            guest_name=guest_name,
-            guest_email=guest_email,
-            check_in_date=check_in_date,
-            check_out_date=check_out_date,
-            status='PENDING',
-            total_amount=total_amount
-        )
-        
-        db.session.add(new_reservation)
-        db.session.commit()
-        
-        # Redirect to success page with booking ID
-        session['booking_id'] = new_reservation.id
-        session['booking_email'] = guest_email
-        return redirect(url_for('frontend.booking_success'))
+        # This is the API endpoint - it's handled by JavaScript
+        # The actual form submission happens via AJAX in the template
+        pass
     
     # GET request - pre-fill form if customer is logged in
     customer_data = None
