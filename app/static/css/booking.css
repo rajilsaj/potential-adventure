@@ -1,0 +1,637 @@
+/* ===================================
+   Hotel Reservation System - Main CSS
+   Fixes layout, alignment, and responsiveness
+   =================================== */
+
+/* === RESET & BASE === */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: #111827;
+}
+
+/* === BOOKING FLOW LAYOUT === */
+
+/* Container for booking page */
+.booking-container {
+    min-height: calc(100vh - 80px);
+    background-color: #f9fafb;
+    padding: 3rem 0;
+}
+
+/* Grid layout for desktop */
+@media (min-width: 1024px) {
+    .booking-grid {
+        display: grid;
+        grid-template-columns: 38% 62%;
+        gap: 2rem;
+        align-items: start;
+    }
+}
+
+/* Room card (left column) */
+.room-card {
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    position: sticky;
+    top: 2rem;
+}
+
+.room-card-image {
+    width: 100%;
+    height: 16rem;
+    object-fit: cover;
+}
+
+.room-card-content {
+    padding: 2rem 1.5rem;
+}
+
+.room-card-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.5rem;
+}
+
+.room-card-meta {
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin-bottom: 1.5rem;
+}
+
+.room-details-section {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.room-details-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 1rem;
+}
+
+.room-detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+}
+
+.room-detail-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.room-detail-value {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.amenities-list {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0 0 0;
+}
+
+.amenity-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.amenity-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #10b981;
+    margin-right: 0.5rem;
+    flex-shrink: 0;
+}
+
+/* Booking form (right column) */
+.booking-form-card {
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+}
+
+.booking-form-header {
+    background-color: #f9fafb;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.booking-form-content {
+    padding: 2rem 1.5rem;
+}
+
+/* Step indicator */
+.step-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+}
+
+.step-item {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.step-item:not(:last-child) {
+    margin-right: 2rem;
+}
+
+.step-circle {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-center;
+    font-weight: 700;
+    font-size: 0.875rem;
+    z-index: 2;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.step-circle.active {
+    background-color: #4f46e5;
+    color: white;
+    border: 2px solid #4f46e5;
+}
+
+.step-circle.inactive {
+    background-color: white;
+    color: #9ca3af;
+    border: 2px solid #d1d5db;
+}
+
+.step-label {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.step-label.active {
+    color: #4f46e5;
+}
+
+.step-label.inactive {
+    color: #9ca3af;
+}
+
+.step-line {
+    position: absolute;
+    top: 1.25rem;
+    left: 50%;
+    right: -50%;
+    height: 2px;
+    background-color: #e5e7eb;
+    z-index: 1;
+}
+
+.step-line.active {
+    background-color: #4f46e5;
+}
+
+/* Form sections */
+.form-section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 1.5rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+    .form-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .form-grid-full {
+        grid-column: 1 / -1;
+    }
+}
+
+.form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #4f46e5;
+    ring: 2px;
+    ring-color: rgba(79, 70, 229, 0.2);
+}
+
+.form-select {
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    background-color: white;
+    transition: all 0.2s ease;
+}
+
+.form-select:focus {
+    outline: none;
+    border-color: #4f46e5;
+    ring: 2px;
+    ring-color: rgba(79, 70, 229, 0.2);
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-primary {
+    background-color: #4f46e5;
+    color: white;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.btn-primary:hover {
+    background-color: #4338ca;
+}
+
+.btn-secondary {
+    background-color: white;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.btn-secondary:hover {
+    background-color: #f9fafb;
+}
+
+.btn-success {
+    background-color: #10b981;
+    color: white;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.btn-success:hover {
+    background-color: #059669;
+}
+
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+    gap: 1rem;
+}
+
+/* Payment summary */
+.payment-summary {
+    background-color: #f9fafb;
+    padding: 1.25rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.payment-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.payment-summary-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.payment-summary-value {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.payment-summary-note {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-top: 0.5rem;
+}
+
+/* === ADMIN LOGIN PAGE === */
+
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #f9fafb;
+    padding: 3rem 1rem;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 28rem;
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    padding: 2.5rem 2rem;
+}
+
+.login-title {
+    font-size: 1.875rem;
+    font-weight: 800;
+    color: #111827;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.login-form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.login-divider {
+    position: relative;
+    margin: 1.5rem 0;
+}
+
+.login-divider-line {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+}
+
+.login-divider-line::before {
+    content: '';
+    flex: 1;
+    border-top: 1px solid #d1d5db;
+}
+
+.login-divider-text {
+    position: relative;
+    display: flex;
+    justify-center;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.login-divider-text span {
+    background: white;
+    padding: 0 0.5rem;
+}
+
+/* === RESPONSIVE DESIGN === */
+
+/* Mobile (< 640px) */
+@media (max-width: 639px) {
+    .booking-container {
+        padding: 1.5rem 0;
+    }
+
+    .room-card {
+        margin-bottom: 1.5rem;
+        position: static;
+    }
+
+    .room-card-content {
+        padding: 1.5rem 1rem;
+    }
+
+    .booking-form-content {
+        padding: 1.5rem 1rem;
+    }
+
+    .step-item:not(:last-child) {
+        margin-right: 1rem;
+    }
+
+    .step-circle {
+        width: 2rem;
+        height: 2rem;
+        font-size: 0.75rem;
+    }
+
+    .step-label {
+        font-size: 0.625rem;
+    }
+
+    .button-group {
+        flex-direction: column-reverse;
+    }
+
+    .button-group .btn {
+        width: 100%;
+    }
+}
+
+/* Tablet (640px - 1023px) */
+@media (min-width: 640px) and (max-width: 1023px) {
+    .booking-container {
+        padding: 2rem 0;
+    }
+
+    .room-card {
+        margin-bottom: 2rem;
+    }
+}
+
+/* Desktop (>= 1024px) */
+@media (min-width: 1024px) {
+    .room-card {
+        max-height: calc(100vh - 6rem);
+        overflow-y: auto;
+    }
+
+    /* Custom scrollbar for room card */
+    .room-card::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .room-card::-webkit-scrollbar-track {
+        background: #f1f5f9;
+    }
+
+    .room-card::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 3px;
+    }
+
+    .room-card::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+}
+
+/* === UTILITY CLASSES === */
+
+.text-center {
+    text-align: center;
+}
+
+.mt-1 {
+    margin-top: 0.25rem;
+}
+
+.mt-2 {
+    margin-top: 0.5rem;
+}
+
+.mt-4 {
+    margin-top: 1rem;
+}
+
+.mt-6 {
+    margin-top: 1.5rem;
+}
+
+.mt-8 {
+    margin-top: 2rem;
+}
+
+.mb-1 {
+    margin-bottom: 0.25rem;
+}
+
+.mb-2 {
+    margin-bottom: 0.5rem;
+}
+
+.mb-4 {
+    margin-bottom: 1rem;
+}
+
+.mb-6 {
+    margin-bottom: 1.5rem;
+}
+
+.mb-8 {
+    margin-bottom: 2rem;
+}
+
+.p-4 {
+    padding: 1rem;
+}
+
+.p-6 {
+    padding: 1.5rem;
+}
+
+.p-8 {
+    padding: 2rem;
+}
+
+.rounded {
+    border-radius: 0.375rem;
+}
+
+.rounded-lg {
+    border-radius: 0.5rem;
+}
+
+.rounded-full {
+    border-radius: 9999px;
+}
+
+.shadow-sm {
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.shadow {
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* === ANIMATIONS === */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* === ACCESSIBILITY === */
+
+.btn:focus,
+.form-input:focus,
+.form-select:focus {
+    outline: 2px solid #4f46e5;
+    outline-offset: 2px;
+}
+
+/* Screen reader only */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}

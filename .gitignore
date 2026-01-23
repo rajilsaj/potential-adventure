@@ -37,3 +37,46 @@ build/
 
 # Node (if used)
 node_modules/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.egg-info/
+
+# Virtual environments
+venv/
+env/
+
+# Environment files
+.env
+envienvi
+envienvi.pub
+
+# IDE files
+.vscode/
+.idea/
+
+# Flask uploads & logs
+instance/
+*.log
+
+# Python installs
+pip-wheel-metadata/
+dist/
+build/
+
+# Cache
+*.sqlite
+*.db
+.cache/
+.pytest_cache/
+
+# macOS files
+.DS_Store
+
+# Node (if used)
+node_modules/
+

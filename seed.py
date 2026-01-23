@@ -1,118 +1,155 @@
 from app import create_app
 from app.extensions import db, bcrypt
-from app.models import User, Room, Customer, Reservation
+from app.models import User, Customer, Room, Reservation
 from datetime import date, timedelta
+import random
 
 app = create_app()
 
 def seed_data():
     with app.app_context():
+        print("Dropping all tables...")
+        db.drop_all()
+        
+        print("Creating all tables...")
+        db.create_all()
+        
         print("Seeding data...")
         
-        # Create Admin
-        if not User.query.filter_by(username='admin').first():
-            hashed_pw = bcrypt.generate_password_hash('admin123').decode('utf-8')
-            admin = User(username='admin', password_hash=hashed_pw, role='ADMIN')
-            db.session.add(admin)
-            print("Created admin user (admin/admin123)")
-        
-        # Create Rooms
-        rooms_data = [
-            ('101', 1, 'SINGLE', 1, 100.00),
-            ('102', 1, 'DOUBLE', 2, 150.00),
-            ('103', 1, 'SUITE', 4, 300.00),
-            ('201', 2, 'SINGLE', 1, 110.00),
-            ('202', 2, 'DOUBLE', 2, 160.00),
-            ('301', 3, 'SINGLE', 1, 120.00),
-            ('302', 3, 'DOUBLE', 2, 170.00),
-            ('303', 3, 'SUITE', 4, 320.00),
-            ('401', 4, 'SINGLE', 1, 130.00),
-            ('402', 4, 'DOUBLE', 2, 180.00),
-        ]
-        
-        rooms_map = {} # room_number -> room object
-        
-        for r_num, floor, r_type, cap, price in rooms_data:
-            if not Room.query.filter_by(room_number=r_num).first():
-                room = Room(room_number=r_num, floor=floor, room_type=r_type, capacity=cap, base_price=price)
-                db.session.add(room)
-                rooms_map[r_num] = room
-        
+        # Create Admin User
+        hashed_pw = bcrypt.generate_password_hash('admin123').decode('utf-8')
+        admin = User(username='admin', password_hash=hashed_pw, role='ADMIN')
+        db.session.add(admin)
         db.session.commit()
+        print("✓ Created admin user (admin/admin123)")
         
-        # Re-query rooms to get IDs
-        rooms = Room.query.all()
-        rooms_dict = {r.room_number: r for r in rooms}
-
-        # Create Customers
-        customers_data = [
-            ('John Doe', 'john.doe@example.com', '555-0101'),
-            ('Maria Santos', 'm.santos@example.com', '555-0102'),
-            ('Ahmed Khan', 'ahmed.khan@example.com', '555-0103'),
-            ('Linda Johnson', 'linda.j@example.com', '555-0104'),
-            ('Emily Chen', 'e.chen@example.com', '555-0105'),
-        ]
-        
-        customers_map = {}
-        
-        for name, email, phone in customers_data:
-            cust = Customer.query.filter_by(email=email).first()
-            if not cust:
-                cust = Customer(full_name=name, email=email, phone=phone)
-                db.session.add(cust)
-            customers_map[email] = cust
-            
+        # Create Staff User
+        staff_pw = bcrypt.generate_password_hash('staff123').decode('utf-8')
+        staff = User(username='staff', password_hash=staff_pw, role='STAFF')
+        db.session.add(staff)
         db.session.commit()
+        print("✓ Created staff user (staff/staff123)")
         
-        # Refresh customers to get IDs
-        for email in customers_map:
-            customers_map[email] = Customer.query.filter_by(email=email).first()
-
-        # Create Reservations (matching the SQL provided in Step 0 roughly)
-        # (1, 101, 'John Doe', 'john.doe@example.com', '2025-01-10', '2025-01-12', 'BOOKED', 170.00)
-        # Note: I'm using the room objects I created, so IDs might differ from SQL but logic holds.
-        
-        reservations_list = [
-            ('john.doe@example.com', '101', '2025-01-10', '2025-01-12', 'BOOKED'),
-            ('m.santos@example.com', '102', '2025-02-05', '2025-02-10', 'PENDING'),
-            ('ahmed.khan@example.com', '103', '2025-03-01', '2025-03-03', 'CANCELLED'),
-            ('linda.j@example.com', '201', '2025-04-15', '2025-04-18', 'BOOKED'),
-            ('e.chen@example.com', '302', '2025-05-20', '2025-05-25', 'CHECKED_IN'),
+        # Create Sample Customers
+        customer_pw = bcrypt.generate_password_hash('customer123').decode('utf-8')
+        customers = [
+            Customer(email='john@example.com', password_hash=customer_pw, full_name='John Doe', phone='+1234567890'),
+            Customer(email='jane@example.com', password_hash=customer_pw, full_name='Jane Smith', phone='+1234567891'),
+            Customer(email='bob@example.com', password_hash=customer_pw, full_name='Bob Johnson', phone='+1234567892'),
         ]
+        for customer in customers:
+            db.session.add(customer)
+        db.session.commit()
+        print(f"✓ Created {len(customers)} sample customers (password: customer123)")
         
-        for email, r_num, start, end, status in reservations_list:
-            cust = customers_map.get(email)
-            room = rooms_dict.get(r_num)
-            
-            if cust and room:
-                # Check if reservation already exists (simple check)
-                exists = Reservation.query.filter_by(
-                    customer_id=cust.id, 
-                    room_id=room.id, 
-                    check_in_date=start
-                ).first()
+        # Create 120 Rooms across 12 floors
+        room_types = ['SINGLE', 'DOUBLE', 'SUITE']
+        room_prices = {
+            'SINGLE': (100, 150),
+            'DOUBLE': (150, 250),
+            'SUITE': (300, 500)
+        }
+        room_capacities = {
+            'SINGLE': 1,
+            'DOUBLE': 2,
+            'SUITE': 4
+        }
+        
+        rooms_created = 0
+        for floor in range(1, 13):  # Floors 1-12
+            for room_num in range(1, 11):  # 10 rooms per floor
+                room_number = f"{floor}{room_num:02d}"  # e.g., 101, 102, ..., 1210
                 
-                if not exists:
-                    # Calculate total
-                    d1 = date.fromisoformat(start)
-                    d2 = date.fromisoformat(end)
-                    days = (d2 - d1).days
-                    total = days * float(room.base_price)
-                    
-                    res = Reservation(
-                        customer_id=cust.id,
-                        room_id=room.id,
-                        guest_name=cust.full_name,
-                        guest_email=cust.email,
-                        check_in_date=d1,
-                        check_out_date=d2,
-                        status=status,
-                        total_amount=total
-                    )
-                    db.session.add(res)
+                # Vary room types
+                if room_num <= 6:
+                    room_type = 'SINGLE'
+                elif room_num <= 9:
+                    room_type = 'DOUBLE'
+                else:
+                    room_type = 'SUITE'
+                
+                # Random price within range
+                price_range = room_prices[room_type]
+                base_price = random.randint(price_range[0], price_range[1])
+                
+                # Some rooms out of service
+                status = 'OUT_OF_SERVICE' if random.random() < 0.05 else 'AVAILABLE'
+                
+                room = Room(
+                    room_number=room_number,
+                    floor=floor,
+                    room_type=room_type,
+                    capacity=room_capacities[room_type],
+                    base_price=base_price,
+                    status=status
+                )
+                db.session.add(room)
+                rooms_created += 1
         
         db.session.commit()
-        print("Seeding completed.")
+        print(f"✓ Created {rooms_created} rooms")
+        
+        # Create Sample Reservations
+        rooms = Room.query.filter_by(status='AVAILABLE').limit(20).all()
+        
+        guest_names = [
+            'John Doe', 'Jane Smith', 'Maria Garcia', 'Ahmed Khan', 'Li Wei',
+            'Sarah Johnson', 'Michael Brown', 'Emily Davis', 'David Wilson', 'Anna Martinez'
+        ]
+        
+        statuses = ['PENDING', 'BOOKED', 'CHECKED_IN', 'CHECKED_OUT', 'CANCELLED']
+        
+        for i, room in enumerate(rooms[:10]):
+            guest_name = random.choice(guest_names)
+            guest_email = f"{guest_name.lower().replace(' ', '.')}@example.com"
+            
+            # Random dates
+            days_ahead = random.randint(1, 60)
+            check_in = date.today() + timedelta(days=days_ahead)
+            nights = random.randint(1, 7)
+            check_out = check_in + timedelta(days=nights)
+            
+            total = float(room.base_price) * nights
+            status = random.choice(statuses)
+            
+            # Map old status to new reservation_status
+            status_map = {
+                'PENDING': 'P',
+                'BOOKED': 'C',
+                'CHECKED_IN': 'I',
+                'CHECKED_OUT': 'O',
+                'CANCELLED': 'X'
+            }
+            reservation_status = status_map.get(status, 'P')
+            
+            # Random reservation type
+            res_types = ['C', 'D', 'I', 'P']
+            reservation_type = random.choice(res_types)
+            
+            reservation = Reservation(
+                room_id=room.id,
+                created_by=admin.id if i % 2 == 0 else staff.id,
+                guest_name=guest_name,
+                guest_email=guest_email,
+                check_in_date=check_in,
+                check_out_date=check_out,
+                arrival_date=check_in,  # OOAD: same as check_in_date
+                number_of_days=nights,  # OOAD: number of nights
+                reservation_type=reservation_type,  # OOAD: C/D/I/P
+                reservation_status=reservation_status,  # OOAD: P/C/I/O/X
+                status=status,  # Legacy status
+                total_amount=total,
+                amount_bill_paid=0.0,  # OOAD: default to 0
+            )
+            db.session.add(reservation)
+        
+        db.session.commit()
+        print("✓ Created 10 sample reservations")
+        
+        print("\n✅ Seeding completed successfully!")
+        print(f"   - Users: 2 (admin, staff)")
+        print(f"   - Rooms: {rooms_created}")
+        print(f"   - Reservations: 10")
 
 if __name__ == "__main__":
     seed_data()

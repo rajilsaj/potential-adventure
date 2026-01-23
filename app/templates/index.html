@@ -1,265 +1,203 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hotel Reservation System - Booking</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-    </style>
-</head>
+{% block title %}Home - Hotel Reservation System{% endblock %}
 
-<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col" style="border-top: 1px solid green;">
+{% block content %}
+<!-- Hero Section -->
+<div class="relative bg-white overflow-hidden">
+    <div class="max-w-7xl mx-auto">
+        <div class="relative z-10 pb-8 bg-white sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32">
+            <svg class="hidden lg:block absolute right-0 inset-y-0 h-full w-48 text-white transform translate-x-1/2"
+                fill="currentColor" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                <polygon points="50,0 100,0 50,100 0,100" />
+            </svg>
 
-    <!-- Main Container -->
-    <main class="flex-grow container mx-auto px-4 py-8 max-w-6xl">
-
-        <!-- Step Indicator -->
-        <div class="mb-8">
-            <div class="flex items-center justify-center space-x-4">
-                <div class="flex items-center text-blue-600">
-                    <div
-                        class="flex items-center justify-center w-8 h-8 rounded-full border-2 border-blue-600 font-bold mr-2">
-                        1</div>
-                    <span class="font-semibold">Booking Information</span>
+            <main class="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
+                <div class="sm:text-center lg:text-left">
+                    <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
+                        <span class="block xl:inline">Experience Luxury</span>
+                        <span class="block text-primary xl:inline">Like Never Before</span>
+                    </h1>
+                    <p
+                        class="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
+                        Book your perfect stay with us. Whether it's a business trip or a relaxing vacation, we have the
+                        best rooms for you.
+                    </p>
+                    <div class="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
+                        <div class="rounded-md shadow">
+                            <a href="{{ url_for('frontend.rooms') }}"
+                                class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary hover:bg-indigo-700 md:py-4 md:text-lg md:px-10">
+                                View All Rooms
+                            </a>
+                        </div>
+                    </div>
                 </div>
-                <div class="h-0.5 w-16 bg-gray-300"></div>
-                <div class="flex items-center text-gray-400">
-                    <div
-                        class="flex items-center justify-center w-8 h-8 rounded-full border-2 border-gray-300 font-bold mr-2">
-                        2</div>
-                    <span>Payment Information</span>
-                </div>
-            </div>
+            </main>
+        </div>
+    </div>
+    <div class="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
+        <img class="h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full"
+            src="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+            alt="Luxury Hotel">
+    </div>
+</div>
+
+<!-- Featured Rooms Section -->
+<div class="bg-gray-50 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+                Our Featured Rooms
+            </h2>
+            <p class="mt-4 max-w-2xl text-xl text-gray-500 mx-auto">
+                Choose from our selection of <span id="total-rooms">120</span> premium rooms designed for your comfort.
+            </p>
         </div>
 
-        <!-- 2-Column Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-[2fr_1.5fr] gap-8">
-
-            <!-- Left Column: Booking Details -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8">
-                <h2 class="text-2xl font-bold mb-6 text-gray-800">Booking Details</h2>
-
-                <form id="booking-form" class="space-y-6">
-                    <!-- Dates -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Check-in Date</label>
-                            <input type="date" id="check_in_date"
-                                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-gray-50"
-                                required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Check-out Date</label>
-                            <input type="date" id="check_out_date"
-                                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-gray-50"
-                                required>
-                        </div>
-                    </div>
-
-                    <!-- Guests & Room Type -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">No. of Guests</label>
-                            <select
-                                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white">
-                                <option>1 Adult</option>
-                                <option>2 Adults</option>
-                                <option>2 Adults, 1 Child</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Room Type</label>
-                            <select id="room_id"
-                                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white">
-                                <option value="">Select a Room</option>
-                                <!-- Options populated by JS -->
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="border-t border-gray-100 pt-6">
-                        <h3 class="text-lg font-semibold mb-4 text-gray-800">Contact Details</h3>
-
-                        <!-- Name -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
-                                <input type="text" id="first_name"
-                                    class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-                                    placeholder="John">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
-                                <input type="text" id="last_name"
-                                    class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-                                    placeholder="Doe">
-                            </div>
-                        </div>
-
-                        <!-- Contact -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                                <input type="tel"
-                                    class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-                                    placeholder="+1 (555) 000-0000">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                                <input type="email" id="guest_email"
-                                    class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-                                    placeholder="john@example.com" required>
-                            </div>
-                        </div>
-                    </div>
-
-                    <button type="submit"
-                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition duration-200 transform hover:-translate-y-0.5 text-lg mt-8">
-                        Book Now
-                    </button>
-                </form>
-
-                <!-- Success Message Container -->
-                <div id="success-message"
-                    class="hidden mt-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
-                    <p class="font-semibold">Booking Request Sent!</p>
-                    <p class="text-sm">Your reservation is now PENDING. We will contact you shortly.</p>
-                </div>
-            </div>
-
-            <!-- Right Column: Room Preview -->
-            <div class="space-y-6">
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden sticky top-8">
-                    <div class="relative h-64">
-                        <img src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800&auto=format&fit=crop&q=60"
-                            alt="Room Preview" class="w-full h-full object-cover">
-                        <div
-                            class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-blue-800 shadow-sm">
-                            PREMIUM
-                        </div>
-                    </div>
-
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-4">
-                            <div>
-                                <h3 class="text-xl font-bold text-gray-900">Deluxe Ocean View</h3>
-                                <p class="text-sm text-gray-500">King Size Bed • Balcony</p>
-                            </div>
-                            <div class="text-right">
-                                <span class="block text-2xl font-bold text-blue-600">$249</span>
-                                <span class="text-xs text-gray-400">per night</span>
-                            </div>
-                        </div>
-
-                        <p class="text-gray-600 text-sm mb-6 leading-relaxed">
-                            Experience ultimate relaxation in our Deluxe Ocean View room. Featuring a private balcony
-                            with stunning sunset views, a spacious king-size bed, and a modern en-suite bathroom with a
-                            rainfall shower.
-                        </p>
-
-                        <h4 class="font-semibold text-sm text-gray-800 mb-3">Room Features</h4>
-                        <div class="grid grid-cols-2 gap-3 text-sm text-gray-600">
-                            <div class="flex items-center">
-                                <span class="mr-2">📶</span> Free Wi-Fi
-                            </div>
-                            <div class="flex items-center">
-                                <span class="mr-2">❄️</span> Air Conditioning
-                            </div>
-                            <div class="flex items-center">
-                                <span class="mr-2">📺</span> Smart TV
-                            </div>
-                            <div class="flex items-center">
-                                <span class="mr-2">☕</span> Coffee Maker
-                            </div>
-                            <div class="flex items-center">
-                                <span class="mr-2">🔒</span> Safe
-                            </div>
-                            <div class="flex items-center">
-                                <span class="mr-2">🚿</span> Rainfall Shower
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-gray-50 px-6 py-4 border-t border-gray-100">
-                        <div class="flex justify-between items-center text-sm">
-                            <span class="text-gray-500">Total for 2 nights</span>
-                            <span class="font-bold text-gray-900">$498.00</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+        <!-- Rooms Grid (Dynamic) -->
+        <div id="rooms-grid" class="mt-10 grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            <!-- Rooms will be loaded here dynamically -->
         </div>
-    </main>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        // Minimal inline script for demo interactions
-        document.getElementById('booking-form').addEventListener('submit', function (e) {
-            e.preventDefault();
+        <!-- Loading Indicator -->
+        <div id="loading" class="hidden mt-8 text-center">
+            <svg class="animate-spin h-8 w-8 text-primary mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none"
+                viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                </path>
+            </svg>
+            <p class="mt-2 text-gray-500">Loading more rooms...</p>
+        </div>
 
-            // Show success message
-            const btn = this.querySelector('button[type="submit"]');
-            const originalText = btn.innerText;
+        <!-- Load More Button -->
+        <div id="load-more-container" class="mt-12 text-center">
+            <button id="load-more-btn"
+                class="inline-flex items-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+                Load More Rooms
+            </button>
+            <p class="mt-2 text-sm text-gray-500">
+                Showing <span id="showing-count">0</span> of <span id="total-count">0</span> rooms
+            </p>
+        </div>
 
-            btn.innerText = 'Processing...';
-            btn.disabled = true;
-            btn.classList.add('opacity-75', 'cursor-not-allowed');
+        <!-- No More Rooms Message -->
+        <div id="no-more-rooms" class="hidden mt-12 text-center">
+            <p class="text-gray-500">You've viewed all available rooms!</p>
+            <a href="{{ url_for('frontend.rooms') }}"
+                class="mt-4 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-indigo-700">
+                Browse All Rooms
+            </a>
+        </div>
+    </div>
+</div>
 
-            setTimeout(() => {
-                document.getElementById('success-message').classList.remove('hidden');
-                btn.innerText = 'Booked Successfully';
-                btn.classList.replace('bg-blue-600', 'bg-green-600');
-                btn.classList.replace('hover:bg-blue-700', 'hover:bg-green-700');
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    let currentPage = 1;
+    const perPage = 5;
+    let totalRooms = 0;
+    let loadedRooms = 0;
 
-                // In a real app, we would send data to backend here
-                // For now, let's try to call the existing API if possible
-                const guestName = (document.getElementById('first_name').value + ' ' + document.getElementById('last_name').value).trim();
-                const guestEmail = document.getElementById('guest_email').value;
-                const roomId = document.getElementById('room_id').value;
-                const checkIn = document.getElementById('check_in_date').value;
-                const checkOut = document.getElementById('check_out_date').value;
+    // Room type images
+    const roomImages = {
+        'SINGLE': 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+        'DOUBLE': 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+        'SUITE': 'https://images.unsplash.com/photo-1590490360182-f33efe29a79d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
+    };
 
-                if (roomId && checkIn && checkOut) {
-                    $.ajax({
-                        url: '/api/reservations',
-                        method: 'POST',
-                        contentType: 'application/json',
-                        data: JSON.stringify({
-                            guest_name: guestName,
-                            guest_email: guestEmail,
-                            room_id: roomId,
-                            check_in_date: checkIn,
-                            check_out_date: checkOut
-                        }),
-                        success: function (res) {
-                            console.log('Reservation saved:', res);
-                        }
-                    });
+    function createRoomCard(room) {
+        const image = roomImages[room.room_type] || roomImages['DOUBLE'];
+        const capacity = room.capacity > 1 ? `${room.capacity} Guests` : '1 Guest';
+
+        return `
+        <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow duration-300 flex flex-col">
+            <div class="relative">
+                <img class="h-48 w-full object-cover" src="${image}" alt="${room.room_type} Room">
+                <div class="absolute top-0 right-0 bg-secondary text-white px-3 py-1 m-2 rounded-full text-xs font-bold uppercase">
+                    ${room.status}
+                </div>
+            </div>
+            <div class="px-6 py-4 flex-grow">
+                <div class="flex justify-between items-baseline">
+                    <h3 class="text-lg font-medium text-gray-900">${room.room_type.charAt(0) + room.room_type.slice(1).toLowerCase()} Room</h3>
+                    <span class="text-sm text-gray-500">${capacity}</span>
+                </div>
+                <p class="mt-2 text-sm text-gray-500">
+                    Room ${room.room_number} on Floor ${room.floor}.
+                </p>
+                <div class="mt-4 flex space-x-2">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800">WiFi</span>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800">TV</span>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800">AC</span>
+                </div>
+            </div>
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
+                <span class="text-xl font-bold text-primary">$${room.base_price} <span class="text-sm font-normal text-gray-500">/ night</span></span>
+                <a href="/room/${room.id}" class="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-md text-sm font-medium">
+                    Book Now
+                </a>
+            </div>
+        </div>
+    `;
+    }
+
+    function loadRooms() {
+        $('#loading').removeClass('hidden');
+        $('#load-more-btn').prop('disabled', true);
+
+        $.ajax({
+            url: '/api/rooms',
+            method: 'GET',
+            data: {
+                page: currentPage,
+                per_page: perPage,
+                status: 'AVAILABLE'
+            },
+            success: function (data) {
+                totalRooms = data.total;
+                $('#total-rooms').text(totalRooms);
+                $('#total-count').text(totalRooms);
+
+                // Append rooms to grid
+                data.rooms.forEach(room => {
+                    $('#rooms-grid').append(createRoomCard(room));
+                    loadedRooms++;
+                });
+
+                $('#showing-count').text(loadedRooms);
+
+                // Check if there are more rooms
+                if (data.has_next) {
+                    currentPage++;
+                    $('#load-more-btn').prop('disabled', false);
+                } else {
+                    $('#load-more-container').addClass('hidden');
+                    $('#no-more-rooms').removeClass('hidden');
                 }
 
-            }, 1500);
+                $('#loading').addClass('hidden');
+            },
+            error: function () {
+                alert('Error loading rooms');
+                $('#loading').addClass('hidden');
+                $('#load-more-btn').prop('disabled', false);
+            }
         });
+    }
 
-        // Load rooms for the select dropdown
-        $(document).ready(function () {
-            $.get('/api/rooms', function (rooms) {
-                const select = $('#room_id');
-                select.empty();
-                select.append('<option value="">Select a Room</option>');
-                rooms.forEach(room => {
-                    if (room.status === 'AVAILABLE') {
-                        select.append(`<option value="${room.id}">Room ${room.room_number} (${room.room_type}) - $${room.base_price}</option>`);
-                    }
-                });
-            });
+    // Load initial rooms on page load
+    $(document).ready(function () {
+        loadRooms();
+
+        // Load more button click handler
+        $('#load-more-btn').click(function () {
+            loadRooms();
         });
-    </script>
-</body>
-
-</html>
+    });
+</script>
+{% endblock %}

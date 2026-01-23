@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+
+{% block title %}Our Rooms - Hotel Reservation System{% endblock %}
+
+{% block content %}
+<div class="bg-white">
+    <!-- Header -->
+    <div class="bg-primary py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-3xl font-extrabold text-white sm:text-4xl">Find Your Perfect Room</h1>
+            <p class="mt-4 text-xl text-indigo-100">Browse our selection of {{ pagination.total }} luxury
+                accommodations.</p>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8">
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <form method="GET" action="{{ url_for('frontend.rooms') }}"
+                class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                <div>
+                    <label for="search" class="block text-sm font-medium text-gray-700">Room Number</label>
+                    <input type="text" id="search" name="search" value="{{ search }}" placeholder="e.g., 101"
+                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm p-2 border">
+                </div>
+                <div>
+                    <label for="room_type" class="block text-sm font-medium text-gray-700">Room Type</label>
+                    <select id="room_type" name="room_type"
+                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm p-2 border">
+                        <option value="">All Types</option>
+                        <option value="SINGLE" {% if room_type=='SINGLE' %}selected{% endif %}>Single</option>
+                        <option value="DOUBLE" {% if room_type=='DOUBLE' %}selected{% endif %}>Double</option>
+                        <option value="SUITE" {% if room_type=='SUITE' %}selected{% endif %}>Suite</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="min_price" class="block text-sm font-medium text-gray-700">Min Price</label>
+                    <input type="number" id="min_price" name="min_price" value="{{ min_price or '' }}" placeholder="$0"
+                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm p-2 border">
+                </div>
+                <div>
+                    <label for="max_price" class="block text-sm font-medium text-gray-700">Max Price</label>
+                    <input type="number" id="max_price" name="max_price" value="{{ max_price or '' }}"
+                        placeholder="$500"
+                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm p-2 border">
+                </div>
+                <div class="flex space-x-2">
+                    <button type="submit"
+                        class="flex-1 bg-primary border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                        Search
+                    </button>
+                    <a href="{{ url_for('frontend.rooms') }}"
+                        class="flex-1 bg-gray-200 border border-gray-300 rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-gray-700 hover:bg-gray-300">
+                        Clear
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Room Grid -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {% if rooms %}
+        <div class="grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            {% for room in rooms %}
+            <div
+                class="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow duration-300 flex flex-col">
+                <div class="relative">
+                    {% if room.room_type == 'SINGLE' %}
+                    <img class="h-48 w-full object-cover"
+                        src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                        alt="Single Room">
+                    {% elif room.room_type == 'DOUBLE' %}
+                    <img class="h-48 w-full object-cover"
+                        src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                        alt="Double Room">
+                    {% else %}
+                    <img class="h-48 w-full object-cover"
+                        src="https://images.unsplash.com/photo-1590490360182-f33efe29a79d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                        alt="Suite">
+                    {% endif %}
+                    <div
+                        class="absolute top-0 right-0 bg-secondary text-white px-3 py-1 m-2 rounded-full text-xs font-bold uppercase">
+                        {{ room.status }}
+                    </div>
+                </div>
+                <div class="px-6 py-4 flex-grow">
+                    <div class="flex justify-between items-baseline">
+                        <h3 class="text-lg font-medium text-gray-900">{{ room.room_type|title }} Room</h3>
+                        <span class="text-sm text-gray-500">{{ room.capacity }} Guest{{ 's' if room.capacity > 1 else ''
+                            }}</span>
+                    </div>
+                    <p class="mt-2 text-sm text-gray-500">
+                        Room {{ room.room_number }} on Floor {{ room.floor }}.
+                    </p>
+                    <div class="mt-4 flex space-x-2">
+                        <span
+                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800">
+                            WiFi
+                        </span>
+                        <span
+                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800">
+                            TV
+                        </span>
+                        <span
+                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800">
+                            AC
+                        </span>
+                    </div>
+                </div>
+                <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
+                    <span class="text-xl font-bold text-primary">${{ room.base_price }} <span
+                            class="text-sm font-normal text-gray-500">/ night</span></span>
+                    <a href="{{ url_for('frontend.room_checkout', room_id=room.id) }}"
+                        class="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-md text-sm font-medium">
+                        Book Now
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if pagination.pages > 1 %}
+        <div class="mt-12 flex justify-center">
+            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                <!-- Previous Button -->
+                {% if pagination.has_prev %}
+                <a href="{{ url_for('frontend.rooms', page=pagination.prev_num, search=search, room_type=room_type, min_price=min_price, max_price=max_price) }}"
+                    class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    <span class="sr-only">Previous</span>
+                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </a>
+                {% else %}
+                <span
+                    class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-gray-100 text-sm font-medium text-gray-300 cursor-not-allowed">
+                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </span>
+                {% endif %}
+
+                <!-- Page Numbers -->
+                {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                {% if page_num %}
+                {% if page_num == pagination.page %}
+                <span
+                    class="z-10 bg-primary border-primary text-white relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                    {{ page_num }}
+                </span>
+                {% else %}
+                <a href="{{ url_for('frontend.rooms', page=page_num, search=search, room_type=room_type, min_price=min_price, max_price=max_price) }}"
+                    class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                    {{ page_num }}
+                </a>
+                {% endif %}
+                {% else %}
+                <span
+                    class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                    ...
+                </span>
+                {% endif %}
+                {% endfor %}
+
+                <!-- Next Button -->
+                {% if pagination.has_next %}
+                <a href="{{ url_for('frontend.rooms', page=pagination.next_num, search=search, room_type=room_type, min_price=min_price, max_price=max_price) }}"
+                    class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    <span class="sr-only">Next</span>
+                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </a>
+                {% else %}
+                <span
+                    class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-gray-100 text-sm font-medium text-gray-300 cursor-not-allowed">
+                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </span>
+                {% endif %}
+            </nav>
+        </div>
+
+        <!-- Page Info -->
+        <div class="mt-4 text-center text-sm text-gray-500">
+            Showing {{ start }} to {{ end }} of {{ pagination.total }} rooms
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="text-center py-12">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">No rooms found</h3>
+            <p class="mt-1 text-sm text-gray-500">Try adjusting your search filters.</p>
+            <div class="mt-6">
+                <a href="{{ url_for('frontend.rooms') }}"
+                    class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-indigo-700">
+                    View All Rooms
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

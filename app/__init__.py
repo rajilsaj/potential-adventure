@@ -1,42 +1,49 @@
+# app/__init__.py
+
 from flask import Flask
-from app.config import Config
-from app.extensions import db, login_manager, bcrypt
+from .extensions import db, login_manager, bcrypt
+from .config import Config
+from dotenv import load_dotenv
+import os
 
-def create_app(config_class=Config):
-    app = Flask(__name__)
-    app.config.from_object(config_class)
+def create_app():
+    # Load .env if present
+    load_dotenv()
 
-    # Initialize extensions
+    app = Flask(__name__, instance_relative_config=True)
+    app.config.from_object(Config)
+
+    # Init extensions FIRST
     db.init_app(app)
     login_manager.init_app(app)
     bcrypt.init_app(app)
     
-    login_manager.login_view = 'auth_api.login_page' # We might need a view for this, or just handle it in frontend
+    # Configure Flask-Login
+    login_manager.login_view = 'frontend.admin_login'
+    login_manager.login_message = 'Please log in to access this page.'
+    
+    # Make current_user available in templates
+    # Import here to avoid circular imports
+    @app.context_processor
+    def inject_current_user():
+        from flask_login import current_user
+        return dict(current_user=current_user)
 
-    # Register Blueprints
-    from app.routes.auth_api import auth_bp
-    from app.routes.rooms_api import rooms_bp
-    from app.routes.customers_api import customers_bp
-    from app.routes.reservations_api import reservations_bp
-    from app.routes.dashboard_api import dashboard_bp
-    from app.routes.frontend import frontend_bp
+    # Register blueprints
+    from .routes.auth_api import auth_bp
+    from .routes.customer_auth_api import customer_auth_bp
+    from .routes.rooms_api import rooms_bp
+    from .routes.customers_api import customers_bp
+    from .routes.reservations_api import reservations_bp
+    from .routes.dashboard_api import dashboard_bp
+    from .routes.frontend import frontend_bp
 
     app.register_blueprint(auth_bp)
+    app.register_blueprint(customer_auth_bp)
     app.register_blueprint(rooms_bp)
     app.register_blueprint(customers_bp)
     app.register_blueprint(reservations_bp)
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(frontend_bp)
-
-    from sqlalchemy import text
-    from flask import render_template, g
-
-    @app.before_request
-    def check_db_connection():
-        try:
-            db.session.execute(text('SELECT 1'))
-            g.db_connected = True
-        except Exception as e:
-            return render_template('db_error.html'), 500
 
     return app

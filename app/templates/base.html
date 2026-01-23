@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Hotel Reservation System{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            DEFAULT: '#4f46e5',  // This is the key fix!
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            200: '#c7d2fe',
+                            300: '#a5b4fc',
+                            400: '#818cf8',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            900: '#312e81',
+                        },
+                        secondary: {
+                            DEFAULT: '#10b981',
+                            500: '#10b981',
+                            600: '#059669',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
+                        'soft-lg': '0 10px 40px -10px rgba(0, 0, 0, 0.1)',
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #6366f1;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4f46e5;
+        }
+
+        /* CRITICAL FIX: Fallback for bg-primary */
+        .bg-primary {
+            background-color: #4f46e5 !important;
+        }
+
+        .hover\:bg-indigo-700:hover {
+            background-color: #4338ca !important;
+        }
+
+        .text-primary {
+            color: #4f46e5 !important;
+        }
+
+        .border-primary {
+            border-color: #4f46e5 !important;
+        }
+
+        .ring-primary {
+            --tw-ring-color: #4f46e5 !important;
+        }
+
+        .focus\:ring-primary:focus {
+            --tw-ring-color: #4f46e5 !important;
+        }
+
+        .focus\:border-primary:focus {
+            border-color: #4f46e5 !important;
+        }
+
+        /* Secondary color fallback */
+        .bg-secondary {
+            background-color: #10b981 !important;
+        }
+
+        .hover\:bg-green-600:hover {
+            background-color: #059669 !important;
+        }
+
+        .text-secondary {
+            color: #10b981 !important;
+        }
+
+        /* Smooth transitions */
+        * {
+            transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+            transition-duration: 150ms;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Card hover effect */
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Button animations */
+        .btn-primary {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-primary:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        /* Gradient backgrounds */
+        .gradient-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .gradient-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        /* Loading animation */
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+
+        .skeleton {
+            animation: shimmer 2s infinite;
+            background: linear-gradient(to right, #f0f0f0 4%, #f8f8f8 25%, #f0f0f0 36%);
+            background-size: 1000px 100%;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="{{ url_for('frontend.index') }}" class="text-2xl font-bold text-primary">
+                            <svg class="w-8 h-8 inline-block mr-2" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                                </path>
+                            </svg>
+                            HRS
+                        </a>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                        <a href="{{ url_for('frontend.index') }}"
+                            class="border-transparent text-gray-500 hover:border-primary hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Home
+                        </a>
+                        <a href="{{ url_for('frontend.rooms') }}"
+                            class="border-transparent text-gray-500 hover:border-primary hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Rooms
+                        </a>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    {% if current_user is defined and current_user.is_authenticated %}
+                    <!-- Admin/Staff Users -->
+                    {% if current_user.role in ['ADMIN', 'STAFF'] %}
+                    <a href="{{ url_for('frontend.dashboard') }}"
+                        class="text-gray-500 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">
+                        Dashboard
+                    </a>
+                    <span class="text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full">{{ current_user.role
+                        }}</span>
+                    {% endif %}
+
+                    <a href="#" onclick="logout()"
+                        class="text-gray-500 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">
+                        Logout ({{ current_user.username }})
+                    </a>
+                    {% else %}
+                    <!-- Guest Users -->
+                    <a href="{{ url_for('frontend.my_bookings') }}"
+                        class="text-gray-500 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">
+                        Track Booking
+                    </a>
+                    <a href="{{ url_for('frontend.admin_login') }}"
+                        class="text-gray-500 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">
+                        Staff Login
+                    </a>
+                    <a href="{{ url_for('frontend.rooms') }}"
+                        class="bg-primary text-white hover:bg-indigo-700 px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out">
+                        Book Now
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <div class="md:flex md:items-center md:justify-between">
+                <div class="flex justify-center md:order-2 space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-gray-500">About</a>
+                    <a href="#" class="text-gray-400 hover:text-gray-500">Contact</a>
+                    <a href="#" class="text-gray-400 hover:text-gray-500">Privacy</a>
+                </div>
+                <div class="mt-8 md:mt-0 md:order-1">
+                    <p class="text-center text-base text-gray-400">
+                        &copy; 2023 Hotel Reservation System. All rights reserved.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function logout() {
+            $.ajax({
+                url: '/api/auth/logout',
+                method: 'POST',
+                success: function () {
+                    window.location.href = '/';
+                }
+            });
+        }
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

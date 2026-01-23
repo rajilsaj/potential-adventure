@@ -1,0 +1,736 @@
+{% extends "base.html" %}
+
+{% block title %}Book Room - Hotel Reservation System{% endblock %}
+
+{% block extra_css %}
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<style>
+    /* Custom Flatpickr styling to match the theme */
+    .flatpickr-calendar {
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+    }
+
+    .flatpickr-day.selected {
+        background: #4f46e5 !important;
+        border-color: #4f46e5 !important;
+    }
+
+    .flatpickr-day.selected:hover {
+        background: #4338ca !important;
+        border-color: #4338ca !important;
+    }
+
+    .flatpickr-day:hover {
+        background: #eef2ff;
+        border-color: #c7d2fe;
+    }
+
+    .flatpickr-months .flatpickr-month {
+        background: #4f46e5;
+    }
+
+    .flatpickr-current-month .flatpickr-monthDropdown-months {
+        background: #4f46e5;
+    }
+
+    .flatpickr-current-month input.cur-year {
+        color: white;
+    }
+
+    .flatpickr-weekdays {
+        background: #f9fafb;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 min-h-screen py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="lg:grid lg:grid-cols-12 lg:gap-x-8">
+
+            <!-- Left Column: Room Details -->
+            <div class="lg:col-span-5">
+                <div class="bg-white shadow rounded-lg overflow-hidden">
+                    <img class="h-64 w-full object-cover"
+                        src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                        alt="Room Image">
+                    <div class="px-6 py-8">
+                        <h2 class="text-2xl font-bold text-gray-900">{{ room.room_type|title }} Room</h2>
+                        <p class="mt-2 text-gray-600">Room {{ room.room_number }} - Floor {{ room.floor }}</p>
+
+                        <div class="mt-6 border-t border-gray-200 pt-6">
+                            <h3 class="text-lg font-medium text-gray-900">Details</h3>
+                            <dl class="mt-4 space-y-4">
+                                <div class="flex justify-between">
+                                    <dt class="text-sm text-gray-500">Price per night</dt>
+                                    <dd class="text-sm font-medium text-gray-900">${{ room.base_price }}</dd>
+                                </div>
+                                <div class="flex justify-between">
+                                    <dt class="text-sm text-gray-500">Capacity</dt>
+                                    <dd class="text-sm font-medium text-gray-900">{{ room.capacity }} Guests</dd>
+                                </div>
+                            </dl>
+                        </div>
+
+                        <div class="mt-6 border-t border-gray-200 pt-6">
+                            <h3 class="text-lg font-medium text-gray-900">Amenities</h3>
+                            <ul class="mt-4 space-y-2">
+                                <li class="flex items-center text-sm text-gray-500">
+                                    <svg class="h-5 w-5 text-secondary mr-2" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    Free Wi-Fi
+                                </li>
+                                <li class="flex items-center text-sm text-gray-500">
+                                    <svg class="h-5 w-5 text-secondary mr-2" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    Flat-screen TV
+                                </li>
+                                <li class="flex items-center text-sm text-gray-500">
+                                    <svg class="h-5 w-5 text-secondary mr-2" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    Air Conditioning
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Booking Form -->
+            <div class="mt-8 lg:mt-0 lg:col-span-7">
+                <div class="bg-white shadow rounded-lg overflow-hidden">
+                    <!-- Step Indicator -->
+                    <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                        <nav aria-label="Progress">
+                            <ol class="flex items-center">
+                                <li class="relative pr-8 sm:pr-20">
+                                    <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                                        <div class="h-0.5 w-full bg-primary"></div>
+                                    </div>
+                                    <a href="#"
+                                        class="relative flex h-8 w-8 items-center justify-center rounded-full bg-primary hover:bg-indigo-900">
+                                        <span class="text-white text-sm font-bold">1</span>
+                                    </a>
+                                    <span class="absolute mt-2 text-xs font-medium text-primary">Details</span>
+                                </li>
+                                <li class="relative pr-8 sm:pr-20">
+                                    <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                                        <div class="h-0.5 w-full bg-gray-200" id="step-2-line"></div>
+                                    </div>
+                                    <a href="#"
+                                        class="relative flex h-8 w-8 items-center justify-center rounded-full bg-white border-2 border-gray-300 hover:border-gray-400"
+                                        id="step-2-circle">
+                                        <span class="text-gray-500 text-sm font-bold">2</span>
+                                    </a>
+                                    <span class="absolute mt-2 text-xs font-medium text-gray-500">Guest</span>
+                                </li>
+                                <li class="relative">
+                                    <a href="#"
+                                        class="relative flex h-8 w-8 items-center justify-center rounded-full bg-white border-2 border-gray-300 hover:border-gray-400"
+                                        id="step-3-circle">
+                                        <span class="text-gray-500 text-sm font-bold">3</span>
+                                    </a>
+                                    <span class="absolute mt-2 text-xs font-medium text-gray-500">Payment</span>
+                                </li>
+                            </ol>
+                        </nav>
+                    </div>
+
+                    <div class="px-6 py-8">
+                        <!-- Step 1: Booking Details -->
+                        <div id="step-1" class="step-content">
+                            <h3 class="text-lg font-medium text-gray-900 mb-6">Booking Details</h3>
+
+                            <div class="space-y-6">
+                                <!-- Reservation Type -->
+                                <div>
+                                    <label for="reservation-type" class="block text-sm font-medium text-gray-700 mb-1">
+                                        Reservation Type <span class="text-red-500">*</span>
+                                    </label>
+                                    <select id="reservation-type" required
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm p-2 border">
+                                        <option value="C">Conventional (Standard Reservation)</option>
+                                        <option value="D">60-Days-in-Advance (Book 60+ days ahead)</option>
+                                        <option value="I">Incentive (Discounted Rate - 20% off)</option>
+                                        <option value="P">Prepaid (Full Payment Required)</option>
+                                    </select>
+                                    <p class="mt-1 text-xs text-gray-500" id="type-description">
+                                        Standard reservation with flexible cancellation policy.
+                                    </p>
+                                </div>
+
+                                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                                    <!-- Check-in Date -->
+                                    <div>
+                                        <label for="check-in" class="block text-sm font-medium text-gray-700 mb-1">
+                                            Check-in Date <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="text" id="check-in" placeholder="Select date" required
+                                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm p-2 border cursor-pointer">
+                                        <p class="mt-1 text-xs text-gray-500">Click to select a date from the calendar
+                                        </p>
+                                        <p id="check-in-error" class="hidden mt-1 text-sm text-red-600"></p>
+                                    </div>
+
+                                    <!-- Check-out Date -->
+                                    <div>
+                                        <label for="check-out" class="block text-sm font-medium text-gray-700 mb-1">
+                                            Check-out Date <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="text" id="check-out" placeholder="Select date" required
+                                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm p-2 border cursor-pointer">
+                                        <p class="mt-1 text-xs text-gray-500">Click to select a date from the calendar
+                                        </p>
+                                        <p id="check-out-error" class="hidden mt-1 text-sm text-red-600"></p>
+                                    </div>
+                                </div>
+
+                                <!-- Number of Nights (Computed) -->
+                                <!-- Number of Nights (Computed) -->
+                                <div id="nights-display"
+                                    class="mt-6 flex items-center justify-center p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0">
+                                            <div class="h-12 w-12 rounded-full bg-primary text-white flex items-center justify-center text-lg font-bold shadow-md transition-all duration-300 transform scale-100"
+                                                id="nights-circle">
+                                                <span id="nights-count-number">0</span>
+                                            </div>
+                                        </div>
+                                        <div class="ml-3">
+                                            <p class="text-sm font-medium text-gray-900">Duration</p>
+                                            <p class="text-sm text-gray-500" id="nights-label">0 days selected</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Number of Guests -->
+                                <div>
+                                    <label for="guests" class="block text-sm font-medium text-gray-700 mb-1">
+                                        Number of Guests <span class="text-red-500">*</span>
+                                    </label>
+                                    <select id="guests" required
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm p-2 border">
+                                        {% for i in range(1, room.capacity + 1) %}
+                                        <option value="{{ i }}">{{ i }} Guest{{ 's' if i > 1 else '' }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <!-- Type-Specific Requirements Notice -->
+                                <div>
+                                    <div id="type-requirements"
+                                        class="p-4 bg-blue-50 border border-blue-200 rounded-md">
+                                        <h4 class="text-sm font-semibold text-blue-900 mb-2">Requirements for this type:
+                                        </h4>
+                                        <ul id="requirements-list" class="text-sm text-blue-700 space-y-1">
+                                            <li>✓ Guest information required</li>
+                                            <li>✓ Flexible cancellation policy</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-8 flex justify-end">
+                                <button type="button" id="next-step-btn" onclick="validateAndProceed()"
+                                    class="bg-primary border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed">
+                                    Next: Guest Info
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Guest Info (Login/Register) -->
+                        <div id="step-2" class="step-content hidden">
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">Guest Information</h3>
+
+                            <!-- Tabs -->
+                            <div class="sm:hidden">
+                                <label for="tabs" class="sr-only">Select a tab</label>
+                                <select id="tabs" name="tabs"
+                                    class="block w-full focus:ring-primary focus:border-primary border-gray-300 rounded-md">
+                                    <option selected>Guest Checkout</option>
+                                    <option>Login</option>
+                                </select>
+                            </div>
+                            <div class="hidden sm:block">
+                                <div class="border-b border-gray-200">
+                                    <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                                        <a href="#"
+                                            class="border-primary text-primary whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+                                            aria-current="page">
+                                            Guest Checkout
+                                        </a>
+                                        <a href="#"
+                                            class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                                            Login (Optional)
+                                        </a>
+                                    </nav>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                                <div class="sm:col-span-3">
+                                    <label for="full-name" class="block text-sm font-medium text-gray-700">Full
+                                        Name</label>
+                                    <input type="text" id="full-name"
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm p-2 border">
+                                </div>
+                                <div class="sm:col-span-3">
+                                    <label for="email" class="block text-sm font-medium text-gray-700">Email
+                                        Address</label>
+                                    <input type="email" id="email"
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm p-2 border">
+                                </div>
+                                <div class="sm:col-span-3">
+                                    <label for="phone" class="block text-sm font-medium text-gray-700">Phone
+                                        Number</label>
+                                    <input type="tel" id="phone"
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm p-2 border">
+                                </div>
+                            </div>
+
+                            <div class="mt-6 flex justify-between">
+                                <button type="button" onclick="prevStep(1)"
+                                    class="bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                                    Back
+                                </button>
+                                <button type="button" onclick="nextStep(3)"
+                                    class="bg-primary border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                                    Next: Payment
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Payment -->
+                        <div id="step-3" class="step-content hidden">
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">Payment Details</h3>
+
+                            <div class="bg-gray-50 p-4 rounded-md mb-6">
+                                <div class="flex justify-between text-sm font-medium text-gray-900">
+                                    <span>Total Amount</span>
+                                    <span id="total-amount">$0.00</span>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">Based on <span id="night-count">0</span> nights at
+                                    ${{ room.base_price }}/night</p>
+                            </div>
+
+                            <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                                <div class="sm:col-span-6">
+                                    <label for="card-name" class="block text-sm font-medium text-gray-700">Name on
+                                        Card</label>
+                                    <input type="text" id="card-name"
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm p-2 border">
+                                </div>
+                                <div class="sm:col-span-4">
+                                    <label for="card-number" class="block text-sm font-medium text-gray-700">Card
+                                        Number</label>
+                                    <input type="text" id="card-number" placeholder="0000 0000 0000 0000"
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm p-2 border">
+                                </div>
+                                <div class="sm:col-span-1">
+                                    <label for="expiry" class="block text-sm font-medium text-gray-700">Expiry</label>
+                                    <input type="text" id="expiry" placeholder="MM/YY"
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm p-2 border">
+                                </div>
+                                <div class="sm:col-span-1">
+                                    <label for="cvc" class="block text-sm font-medium text-gray-700">CVC</label>
+                                    <input type="text" id="cvc" placeholder="123"
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm p-2 border">
+                                </div>
+                            </div>
+
+                            <div class="mt-6 flex justify-between">
+                                <button type="button" onclick="prevStep(2)"
+                                    class="bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                                    Back
+                                </button>
+                                <button type="button" onclick="submitBooking()"
+                                    class="bg-secondary border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary">
+                                    Confirm Booking
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    // Wrap everything in document ready to ensure DOM is loaded
+    $(document).ready(function () {
+        const roomPrice = {{ room.base_price }
+    };
+    const roomId = {{ room.id }};
+    let reservationType = 'C';  // Default to Conventional
+
+    // Initialize Flatpickr for check-in date
+    const checkInPicker = flatpickr("#check-in", {
+        dateFormat: "Y-m-d",
+        minDate: "today",
+        onChange: function (selectedDates, dateStr, instance) {
+            // Update check-out min date when check-in is selected
+            if (selectedDates.length > 0) {
+                const nextDay = new Date(selectedDates[0]);
+                nextDay.setDate(nextDay.getDate() + 1);
+                checkOutPicker.set('minDate', nextDay);
+
+                // Clear check-out if it's before the new check-in
+                const checkOutDate = checkOutPicker.selectedDates[0];
+                if (checkOutDate && checkOutDate <= selectedDates[0]) {
+                    checkOutPicker.clear();
+                }
+            }
+            calculateAndDisplayNights();
+            clearFieldError('check-in');
+
+            // Enable button if both fields have values
+            const checkInStr = $('#check-in').val().trim();
+            const checkOutStr = $('#check-out').val().trim();
+            if (checkInStr && checkOutStr) {
+                $('#next-step-btn').prop('disabled', false);
+            }
+        }
+    });
+
+    // Initialize Flatpickr for check-out date
+    const checkOutPicker = flatpickr("#check-out", {
+        dateFormat: "Y-m-d",
+        minDate: "today",
+        onChange: function (selectedDates, dateStr, instance) {
+            calculateAndDisplayNights();
+            clearFieldError('check-out');
+
+            // Enable button if both fields have values
+            const checkInStr = $('#check-in').val().trim();
+            const checkOutStr = $('#check-out').val().trim();
+            if (checkInStr && checkOutStr) {
+                $('#next-step-btn').prop('disabled', false);
+            }
+        }
+    });
+
+    // Update type description and requirements when type changes
+    $('#reservation-type').on('change', function () {
+        reservationType = $(this).val();
+        updateTypeDescription(reservationType);
+        updateRequirements(reservationType);
+    });
+
+    function updateTypeDescription(type) {
+        const descriptions = {
+            'C': 'Standard reservation with flexible cancellation policy.',
+            'D': 'Must be booked at least 60 days in advance. Credit card required. Full charge if canceled.',
+            'I': 'Discounted rate (20% off). First day charge if canceled.',
+            'P': 'Full payment required at booking. Full charge if canceled.'
+        };
+        $('#type-description').text(descriptions[type] || '');
+    }
+
+    function updateRequirements(type) {
+        const requirements = {
+            'C': [
+                '✓ Guest information required',
+                '✓ Flexible cancellation policy',
+                '✓ First day charge if canceled'
+            ],
+            'D': [
+                '✓ Must book 60+ days in advance',
+                '✓ Credit card REQUIRED',
+                '✓ Full charge if canceled',
+                '✓ Auto-canceled if no payment 30 days before arrival'
+            ],
+            'I': [
+                '✓ 20% discount on base rate',
+                '✓ Guest information required',
+                '✓ First day charge if canceled'
+            ],
+            'P': [
+                '✓ Full payment REQUIRED at booking',
+                '✓ Credit card REQUIRED',
+                '✓ Full charge if canceled',
+                '✓ No refunds'
+            ]
+        };
+
+        const list = requirements[type] || [];
+        $('#requirements-list').html(list.map(item => `<li>${item}</li>`).join(''));
+    }
+
+    function displayFieldError(fieldId, message) {
+        const input = $(`#${fieldId}`);
+        const errorElement = $(`#${fieldId}-error`);
+
+        // Add error styling to input
+        input.removeClass('border-gray-300 focus:border-primary focus:ring-primary');
+        input.addClass('border-red-300 focus:border-red-500 focus:ring-red-500');
+
+        // Show error message
+        errorElement.text(message).removeClass('hidden');
+    }
+
+    function clearFieldError(fieldId) {
+        const input = $(`#${fieldId}`);
+        const errorElement = $(`#${fieldId}-error`);
+
+        // Remove error styling from input
+        input.removeClass('border-red-300 focus:border-red-500 focus:ring-red-500');
+        input.addClass('border-gray-300 focus:border-primary focus:ring-primary');
+
+        // Hide error message
+        errorElement.addClass('hidden').text('');
+    }
+
+    function clearAllErrors() {
+        clearFieldError('check-in');
+        clearFieldError('check-out');
+    }
+
+    function calculateAndDisplayNights() {
+        const checkInStr = $('#check-in').val().trim();
+        const checkOutStr = $('#check-out').val().trim();
+
+        // Default state
+        let nights = 0;
+        $('#nights-count-number').text('0');
+        $('#nights-label').text('0 days selected');
+        $('#nights-circle').removeClass('scale-110 bg-indigo-600').addClass('bg-primary');
+
+        // Validate format first
+        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+        if (!dateRegex.test(checkInStr) || !dateRegex.test(checkOutStr)) {
+            return 0;
+        }
+
+        // Parse dates
+        const checkIn = new Date(checkInStr);
+        const checkOut = new Date(checkOutStr);
+
+        // Validate dates are valid
+        if (isNaN(checkIn.getTime()) || isNaN(checkOut.getTime())) {
+            return 0;
+        }
+
+        // Calculate nights
+        if (checkOut > checkIn) {
+            const diffTime = Math.abs(checkOut - checkIn);
+            nights = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            // Display nights
+            $('#nights-count-number').text(nights);
+            $('#nights-label').text(nights === 1 ? '1 day booked' : `${nights} days booked`);
+            $('#nights-circle').addClass('scale-110'); // Add a little pop animation
+
+            return nights;
+        } else {
+            return 0;
+        }
+    }
+
+    function validateAndProceed() {
+        clearAllErrors();
+
+        const errors = {};
+        const type = $('#reservation-type').val();
+        const checkInStr = $('#check-in').val().trim();
+        const checkOutStr = $('#check-out').val().trim();
+        const guests = $('#guests').val();
+
+        // Validate dates are entered
+        if (!checkInStr) {
+            errors.check_in = 'Check-in date is required';
+        }
+        if (!checkOutStr) {
+            errors.check_out = 'Check-out date is required';
+        }
+
+        // If either is empty, show errors and return
+        if (errors.check_in || errors.check_out) {
+            if (errors.check_in) displayFieldError('check-in', errors.check_in);
+            if (errors.check_out) displayFieldError('check-out', errors.check_out);
+            $('#next-step-btn').prop('disabled', true);
+            return false;
+        }
+
+        // Validate date format (YYYY-MM-DD)
+        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+        if (!dateRegex.test(checkInStr)) {
+            errors.check_in = 'Check-in date must be in format YYYY-MM-DD';
+        }
+        if (!dateRegex.test(checkOutStr)) {
+            errors.check_out = 'Check-out date must be in format YYYY-MM-DD';
+        }
+
+        // If format is invalid, show errors and return
+        if (errors.check_in || errors.check_out) {
+            if (errors.check_in) displayFieldError('check-in', errors.check_in);
+            if (errors.check_out) displayFieldError('check-out', errors.check_out);
+            $('#next-step-btn').prop('disabled', true);
+            return false;
+        }
+
+        // Parse dates
+        const checkIn = new Date(checkInStr);
+        const checkOut = new Date(checkOutStr);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // Validate dates are valid
+        if (isNaN(checkIn.getTime())) {
+            errors.check_in = 'Check-in date is not a valid date';
+        }
+        if (isNaN(checkOut.getTime())) {
+            errors.check_out = 'Check-out date is not a valid date';
+        }
+
+        // If dates are invalid, show errors and return
+        if (errors.check_in || errors.check_out) {
+            if (errors.check_in) displayFieldError('check-in', errors.check_in);
+            if (errors.check_out) displayFieldError('check-out', errors.check_out);
+            $('#next-step-btn').prop('disabled', true);
+            return false;
+        }
+
+        // Validate check-in is not in the past
+        if (checkIn < today) {
+            displayFieldError('check-in', 'Check-in date cannot be in the past');
+            $('#next-step-btn').prop('disabled', true);
+            return false;
+        }
+
+        // Validate check-out is after check-in
+        if (checkOut <= checkIn) {
+            displayFieldError('check-out', 'Check-out date must be after check-in date');
+            $('#next-step-btn').prop('disabled', true);
+            return false;
+        }
+
+        // Validate 60-Days requirement
+        if (type === 'D') {
+            const daysUntilCheckIn = Math.ceil((checkIn - today) / (1000 * 60 * 60 * 24));
+            if (daysUntilCheckIn < 60) {
+                displayFieldError('check-in', `60-Days-in-Advance reservations must be made at least 60 days before arrival. You are booking ${daysUntilCheckIn} days in advance.`);
+                $('#next-step-btn').prop('disabled', true);
+                return false;
+            }
+        }
+
+        // All validation passed - enable button and proceed
+        $('#next-step-btn').prop('disabled', false);
+        nextStep(2);
+        return true;
+    }
+
+    // Real-time validation on blur
+    $('#check-in, #check-out').on('blur', function () {
+        calculateAndDisplayNights();
+
+        // Clear previous errors for this field
+        const fieldId = $(this).attr('id');
+        clearFieldError(fieldId);
+
+        // Enable button if both fields have values
+        const checkInStr = $('#check-in').val().trim();
+        const checkOutStr = $('#check-out').val().trim();
+
+        if (checkInStr && checkOutStr) {
+            $('#next-step-btn').prop('disabled', false);
+        }
+    });
+
+    // Real-time validation on input
+    $('#check-in, #check-out').on('input', function () {
+        calculateAndDisplayNights();
+    });
+
+    function nextStep(step) {
+        $('.step-content').addClass('hidden');
+        $(`#step-${step}`).removeClass('hidden');
+
+        // Update stepper UI (simplified)
+        if (step === 2) {
+            $('#step-2-circle').addClass('bg-primary border-primary').removeClass('bg-white border-gray-300');
+            $('#step-2-circle span').addClass('text-white').removeClass('text-gray-500');
+            $('#step-2-line').addClass('bg-primary').removeClass('bg-gray-200');
+        }
+        if (step === 3) {
+            $('#step-3-circle').addClass('bg-primary border-primary').removeClass('bg-white border-gray-300');
+            $('#step-3-circle span').addClass('text-white').removeClass('text-gray-500');
+            calculateTotal();
+        }
+    }
+
+    function prevStep(step) {
+        $('.step-content').addClass('hidden');
+        $(`#step-${step}`).removeClass('hidden');
+    }
+
+    function calculateTotal() {
+        const checkIn = new Date($('#check-in').val());
+        const checkOut = new Date($('#check-out').val());
+
+        if (checkIn && checkOut && checkOut > checkIn) {
+            const diffTime = Math.abs(checkOut - checkIn);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            let total = diffDays * roomPrice;
+
+            // Apply 20% discount for Incentive reservations
+            if (reservationType === 'I') {
+                total = total * 0.80;
+            }
+
+            $('#night-count').text(diffDays);
+            $('#total-amount').text('$' + total.toFixed(2));
+        }
+    }
+
+    function submitBooking() {
+        const bookingData = {
+            room_id: roomId,
+            reservation_type: reservationType,
+            guest_name: $('#full-name').val(),
+            guest_email: $('#email').val(),
+            guest_phone: $('#phone').val(),
+            check_in_date: $('#check-in').val(),
+            check_out_date: $('#check-out').val(),
+            number_of_guests: $('#guests').val(),
+            credit_card_number: $('#card-number').val(),
+            credit_card_expiry: $('#expiry').val(),
+            credit_card_type: 'Visa'  // You can add a selector for this
+        };
+
+        $.ajax({
+            url: '/api/reservations',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(bookingData),
+            success: function (response) {
+                window.location.href = "{{ url_for('frontend.booking_success') }}";
+            },
+            error: function (xhr) {
+                alert('Error creating reservation: ' + (xhr.responseJSON?.error || 'Unknown error'));
+            }
+        });
+    }
+
+    }); // End of document.ready
+
+</script>
+{% endblock %}

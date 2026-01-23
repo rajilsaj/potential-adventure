@@ -7,10 +7,23 @@ rooms_bp = Blueprint('rooms_api', __name__, url_prefix='/api/rooms')
 
 @rooms_bp.route('', methods=['GET'])
 def get_rooms():
-    rooms = Room.query.all()
-    result = []
-    for room in rooms:
-        result.append({
+    """Get all available rooms with optional pagination"""
+    # Get pagination parameters
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 10, type=int)
+    status = request.args.get('status', 'AVAILABLE', type=str)
+    
+    # Query rooms
+    query = Room.query.filter_by(status=status)
+    
+    # Paginate
+    pagination = query.order_by(Room.room_number).paginate(
+        page=page, per_page=per_page, error_out=False
+    )
+    
+    rooms = []
+    for room in pagination.items:
+        rooms.append({
             'id': room.id,
             'room_number': room.room_number,
             'floor': room.floor,
@@ -19,7 +32,16 @@ def get_rooms():
             'status': room.status,
             'base_price': float(room.base_price)
         })
-    return jsonify(result), 200
+    
+    return jsonify({
+        'rooms': rooms,
+        'page': pagination.page,
+        'per_page': pagination.per_page,
+        'total': pagination.total,
+        'pages': pagination.pages,
+        'has_next': pagination.has_next,
+        'has_prev': pagination.has_prev
+    }), 200
 
 @rooms_bp.route('/<int:id>', methods=['GET'])
 def get_room(id):
